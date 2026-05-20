@@ -1,0 +1,22 @@
+{
+  "name": "miwallapop",
+  "version": "1.0.0",
+  "description": "Tienda online de compra-venta de artículos",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Irene Olmos",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^5.0.0",
+    "mysql2": "^3.16.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.0.1"
+  }
+}
