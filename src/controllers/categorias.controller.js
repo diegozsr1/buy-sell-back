@@ -1,6 +1,6 @@
-const CategoriaModel=require('../models/categories.model.js');
+const CategoriaModel=require('../models/categorias.model.js');
 
-const getCategories = async (req, res) => {
+const getCategorias = async (req, res) => {
     try {
         const resultado = await CategoriaModel.getAll();
 
@@ -16,5 +16,5 @@ const getCategories = async (req, res) => {
 }
 
 module.exports={
-    getCategories,
+    getCategorias,
 }
