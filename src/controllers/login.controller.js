@@ -23,8 +23,8 @@ const omitPassword = (usuario) => {
 
 const login = async (req, res) => {
     try {
-        const { username, password } = await loginSchema.validate(req.body, validationOptions);
-        const usuario = await LoginModel.getByUsername(username);
+        const { email, password } = await loginSchema.validate(req.body, validationOptions);
+        const usuario = await LoginModel.getByEmail(email);
 
         if (!usuario) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -43,7 +43,7 @@ const login = async (req, res) => {
         const usuarioSinPassword = omitPassword(usuario);
         const token = signToken({
             id: usuario.id,
-            username: usuario.username,
+            email: usuario.email,
             roles_id: usuario.roles_id
         });
 

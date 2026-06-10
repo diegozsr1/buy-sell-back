@@ -1,13 +1,13 @@
 const db = require('../config/db.js');
 
-const getByUsername = async (username) => {
+const getByEmail = async (email) => {
     const result = await db.query(
-        `SELECT * FROM usuarios WHERE username = ?`,
-        [username]
+        `SELECT * FROM usuarios WHERE email = ?`,
+        [email]
     );
     return result[0][0] ?? null;
 };
 
 module.exports = {
-    getByUsername
+    getByEmail
 };

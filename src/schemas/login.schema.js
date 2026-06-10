@@ -1,11 +1,12 @@
 const yup = require('yup');
 
 const loginSchema = yup.object({
-    username: yup
+    email: yup
         .string()
         .trim()
-        .max(45, 'El username no puede superar 45 caracteres')
-        .required('El username es obligatorio'),
+        .email('El email no es válido')
+        .max(100, 'El email no puede superar 100 caracteres')
+        .required('El email es obligatorio'),
     password: yup
         .string()
         .min(6, 'La contraseña debe tener al menos 6 caracteres')
