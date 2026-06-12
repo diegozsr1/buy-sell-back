@@ -1,5 +1,10 @@
 const UsuarioModel = require('../models/usuarios.model.js');
-const { usuarioSchema, usuarioIdSchema } = require('../schemas/usuarios.schema.js');
+const {
+    usuarioSchema,
+    usuarioIdSchema,
+    usuarioRolSchema,
+    usuarioBloqueadoSchema
+} = require('../schemas/usuarios.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
@@ -23,6 +28,39 @@ const getUsuarios = async (req, res) => {
             return res.status(500).json({ error: 'Ha habido un error al consultar la base de datos' });
         }
     } catch (error) {
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
+const countUsuarios = async (req, res) => {
+    try {
+        const total = await UsuarioModel.countAll();
+        res.json({ count: total });
+    } catch (error) {
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
+const countUsuariosByRol = async (req, res) => {
+    try {
+        const { rol } = await usuarioRolSchema.validate(req.params, validationOptions);
+        const total = await UsuarioModel.countByRol(rol);
+        res.json({ count: total });
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
+const countUsuariosByBloqueado = async (req, res) => {
+    try {
+        const { bloqueado } = await usuarioBloqueadoSchema.validate(req.params, validationOptions);
+        const total = await UsuarioModel.countByBloqueado(bloqueado);
+        res.json({ count: total });
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
         return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
     }
 };
@@ -94,6 +132,9 @@ const deleteUsuario = async (req, res) => {
 
 module.exports = {
     getUsuarios,
+    countUsuarios,
+    countUsuariosByRol,
+    countUsuariosByBloqueado,
     getUsuarioById,
     createUsuario,
     updateUsuario,

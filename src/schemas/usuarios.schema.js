@@ -71,7 +71,25 @@ const usuarioIdSchema = yup.object({
         .transform((value, originalValue) => Number(originalValue))
 });
 
+const usuarioRolSchema = yup.object({
+    rol: yup
+        .string()
+        .oneOf(ROLES, `El rol debe ser uno de: ${ROLES.join(', ')}`)
+        .required('El rol es obligatorio')
+});
+
+const usuarioBloqueadoSchema = yup.object({
+    bloqueado: yup
+        .number()
+        .integer()
+        .oneOf([0, 1], 'El campo bloqueado debe ser 0 o 1')
+        .required('El campo bloqueado es obligatorio')
+        .transform((value, originalValue) => Number(originalValue))
+});
+
 module.exports = {
     usuarioSchema,
-    usuarioIdSchema
+    usuarioIdSchema,
+    usuarioRolSchema,
+    usuarioBloqueadoSchema
 };

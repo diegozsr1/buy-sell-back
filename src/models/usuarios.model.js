@@ -21,6 +21,21 @@ const getById = async (id) => {
     return omitPassword(result[0][0]);
 };
 
+const countAll = async () => {
+    const result = await db.query(`SELECT COUNT(*) AS total FROM usuarios`);
+    return result[0][0].total;
+};
+
+const countByRol = async (rol) => {
+    const result = await db.query(`SELECT COUNT(*) AS total FROM usuarios WHERE roles_id = ?`, [rol]);
+    return result[0][0].total;
+};
+
+const countByBloqueado = async (bloqueado) => {
+    const result = await db.query(`SELECT COUNT(*) AS total FROM usuarios WHERE bloqueado = ?`, [bloqueado]);
+    return result[0][0].total;
+};
+
 const create = async (usuario) => {
     const {
         nombre,
@@ -118,6 +133,9 @@ const remove = async (id) => {
 module.exports = {
     getAll,
     getById,
+    countAll,
+    countByRol,
+    countByBloqueado,
     create,
     update,
     remove
