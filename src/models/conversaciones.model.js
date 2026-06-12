@@ -1,9 +1,4 @@
-const db = require('../config/db.js');
-
-const getAll = async () => {
-    const result = await db.query(`SELECT * FROM categorias`);
-    return result[0];
-};
+const getAll = async () => {};
 
 const getById = async (id) => {};
 
