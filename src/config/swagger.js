@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const schemas = require('../swagger/schemas/index');
 
 require('dotenv').config();
 
@@ -24,9 +25,10 @@ const options = {
                     bearerFormat: 'JWT',
                 },
             },
+            schemas,
         },
     },
-    apis: ['./src/routes/api/**/*.js'],
+    apis: ['./src/routes/api/login.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
