@@ -10,6 +10,36 @@ const {
     deleteUsuario
 } = require('../../controllers/usuarios.controller');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Usuarios
+ *   description: Gestión de usuarios
+ */
+
+/**
+ * @swagger
+ * /api/usuarios/count:
+ *   get:
+ *     summary: Contar usuarios
+ *     description: Devuelve el número total de usuarios registrados.
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Total de usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CountResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al consultar los datos
+ */
 router.get('/count', countUsuarios);
 router.get('/count/rol/:rol', countUsuariosByRol);
 router.get('/count/bloqueado/:bloqueado', countUsuariosByBloqueado);

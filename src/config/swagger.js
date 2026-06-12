@@ -28,7 +28,7 @@ const options = {
             schemas,
         },
     },
-    apis: ['./src/routes/api/login.js'],
+    apis: ['./src/routes/api/login.js', './src/routes/api/usuarios.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
