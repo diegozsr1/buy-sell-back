@@ -81,6 +81,45 @@ router.get('/count', countUsuarios);
  *               error: Ha habido un error al consultar los datos
  */
 router.get('/count/rol/:rol', countUsuariosByRol);
+
+/**
+ * @swagger
+ * /api/usuarios/count/bloqueado/{bloqueado}:
+ *   get:
+ *     summary: Contar usuarios por estado de bloqueo
+ *     description: Devuelve el número de usuarios bloqueados o no bloqueados según el valor indicado.
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: bloqueado
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           enum: [0, 1]
+ *         description: "0 = no bloqueado, 1 = bloqueado"
+ *         example: 0
+ *     responses:
+ *       200:
+ *         description: Total de usuarios con ese estado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CountResponse'
+ *       400:
+ *         description: Valor de bloqueado no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al consultar los datos
+ */
 router.get('/count/bloqueado/:bloqueado', countUsuariosByBloqueado);
 router.get('/', getUsuarios);
 router.get('/:id', getUsuarioById);
