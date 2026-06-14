@@ -133,6 +133,14 @@ const updateRol = async (id, roles_id) => {
     return result[0].affectedRows > 0;
 };
 
+const updateBloqueado = async (id, bloqueado) => {
+    const result = await db.query(
+        `UPDATE usuarios SET bloqueado = ? WHERE id = ?`,
+        [bloqueado, id]
+    );
+    return result[0].affectedRows > 0;
+};
+
 const remove = async (id) => {
     const result = await db.query(`DELETE FROM usuarios WHERE id = ?`, [id]);
     return result[0].affectedRows > 0;
@@ -147,5 +155,6 @@ module.exports = {
     create,
     update,
     updateRol,
+    updateBloqueado,
     remove
 };

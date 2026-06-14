@@ -8,6 +8,7 @@ const {
     createUsuario,
     updateUsuario,
     updateUsuarioRol,
+    updateUsuarioBloqueado,
     deleteUsuario
 } = require('../../controllers/usuarios.controller');
 
@@ -178,6 +179,62 @@ router.get('/count/bloqueado/:bloqueado', countUsuariosByBloqueado);
  *               error: Ha habido un error al actualizar el rol del usuario
  */
 router.patch('/:id/rol/:rol', updateUsuarioRol);
+
+/**
+ * @swagger
+ * /api/usuarios/{id}/bloqueado/{bloqueado}:
+ *   patch:
+ *     summary: Actualizar estado de bloqueo de un usuario
+ *     description: Actualiza únicamente el estado de bloqueo (bloqueado) de un usuario existente.
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario
+ *         example: 1
+ *       - in: path
+ *         name: bloqueado
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           enum: [0, 1]
+ *         description: "0 = no bloqueado, 1 = bloqueado"
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Estado de bloqueo actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al actualizar el estado de bloqueo del usuario
+ */
+router.patch('/:id/bloqueado/:bloqueado', updateUsuarioBloqueado);
 
 /**
  * @swagger
