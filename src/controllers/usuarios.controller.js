@@ -113,6 +113,44 @@ const updateUsuario = async (req, res) => {
     }
 };
 
+const updateUsuarioRol = async (req, res) => {
+    try {
+        const { id } = await usuarioIdSchema.validate(req.params, validationOptions);
+        const { rol } = await usuarioRolSchema.validate(req.params, validationOptions);
+        const actualizado = await UsuarioModel.updateRol(id, rol);
+
+        if (actualizado) {
+            const resultado = await UsuarioModel.getById(id);
+            res.json(resultado);
+        } else {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al actualizar el rol del usuario' });
+    }
+};
+
+const updateUsuarioBloqueado = async (req, res) => {
+    try {
+        const { id } = await usuarioIdSchema.validate(req.params, validationOptions);
+        const { bloqueado } = await usuarioBloqueadoSchema.validate(req.params, validationOptions);
+        const actualizado = await UsuarioModel.updateBloqueado(id, bloqueado);
+
+        if (actualizado) {
+            const resultado = await UsuarioModel.getById(id);
+            res.json(resultado);
+        } else {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al actualizar el estado de bloqueo del usuario' });
+    }
+};
+
 const deleteUsuario = async (req, res) => {
     try {
         const { id } = await usuarioIdSchema.validate(req.params, validationOptions);
@@ -138,5 +176,7 @@ module.exports = {
     getUsuarioById,
     createUsuario,
     updateUsuario,
+    updateUsuarioRol,
+    updateUsuarioBloqueado,
     deleteUsuario
 };
