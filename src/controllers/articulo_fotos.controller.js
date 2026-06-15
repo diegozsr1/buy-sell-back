@@ -1,6 +1,5 @@
 const ArticuloFotoModel = require('../models/articulo_fotos.model.js');
 
-// GET /articulo_fotos
 const getArticuloFotos = async (req, res) => {
     try {
         const rows = await ArticuloFotoModel.getAll();
@@ -10,7 +9,6 @@ const getArticuloFotos = async (req, res) => {
     }
 };
 
-// GET /articulo_fotos/:id
 const getArticuloFotoById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -28,7 +26,6 @@ const getArticuloFotoById = async (req, res) => {
     }
 };
 
-// POST /articulo_fotos
 const createArticuloFoto = async (req, res) => {
     try {
         const { url_foto, principal, articulos_id } = req.body;
@@ -47,7 +44,6 @@ const createArticuloFoto = async (req, res) => {
     }
 };
 
-// PUT /articulo_fotos/:id
 const updateArticuloFoto = async (req, res) => {
     try {
         const { id } = req.params;
@@ -67,7 +63,6 @@ const updateArticuloFoto = async (req, res) => {
     }
 };
 
-// DELETE /articulo_fotos/:id
 const deleteArticuloFoto = async (req, res) => {
     try {
         const { id } = req.params;

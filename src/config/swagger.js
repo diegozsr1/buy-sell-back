@@ -28,7 +28,12 @@ const options = {
             schemas,
         },
     },
-    apis: ['./src/routes/api/login.js', './src/routes/api/usuarios.js', './src/routes/api/valoraciones.js'],
+    apis: [
+        './src/routes/api/login.js',
+        './src/routes/api/usuarios.js',
+        './src/routes/api/valoraciones.js',
+        './src/routes/api/articulo_fotos.js',
+    ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
