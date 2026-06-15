@@ -1,12 +1,9 @@
-const pool = require('../db');
+const CategoriaModel = require('../models/categorias.model.js');
 
 // GET /categorias
 const getCategorias = async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            'SELECT * FROM categorias'
-        );
-
+        const rows = await CategoriaModel.getAll();
         res.status(200).json(rows);
     } catch (error) {
         res.status(500).json({
@@ -20,19 +17,15 @@ const getCategorias = async (req, res) => {
 const getCategoriaById = async (req, res) => {
     try {
         const { id } = req.params;
+        const categoria = await CategoriaModel.getById(id);
 
-        const [rows] = await pool.query(
-            'SELECT * FROM categorias WHERE id = ?',
-            [id]
-        );
-
-        if (rows.length === 0) {
+        if (!categoria) {
             return res.status(404).json({
                 mensaje: 'Categoría no encontrada',
             });
         }
 
-        res.status(200).json(rows[0]);
+        res.status(200).json(categoria);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener la categoría',
@@ -52,15 +45,11 @@ const createCategoria = async (req, res) => {
             });
         }
 
-        const [result] = await pool.query(
-            `INSERT INTO categorias (nombre, descripcion)
-             VALUES (?, ?)`,
-            [nombre, descripcion]
-        );
+        const resultado = await CategoriaModel.create({ nombre, descripcion });
 
         res.status(201).json({
             mensaje: 'Categoría creada correctamente',
-            id: result.insertId,
+            id: resultado.id,
         });
     } catch (error) {
         res.status(500).json({
@@ -74,13 +63,9 @@ const createCategoria = async (req, res) => {
 const updateCategoria = async (req, res) => {
     try {
         const { id } = req.params;
+        const categoriaExistente = await CategoriaModel.getById(id);
 
-        const [categoriaExistente] = await pool.query(
-            'SELECT id FROM categorias WHERE id = ?',
-            [id]
-        );
-
-        if (categoriaExistente.length === 0) {
+        if (!categoriaExistente) {
             return res.status(404).json({
                 mensaje: 'Categoría no encontrada',
             });
@@ -94,12 +79,7 @@ const updateCategoria = async (req, res) => {
             });
         }
 
-        await pool.query(
-            `UPDATE categorias
-             SET nombre = ?, descripcion = ?
-             WHERE id = ?`,
-            [nombre, descripcion, id]
-        );
+        await CategoriaModel.update(id, { nombre, descripcion });
 
         res.status(200).json({
             mensaje: 'Categoría actualizada correctamente',
@@ -116,22 +96,15 @@ const updateCategoria = async (req, res) => {
 const deleteCategoria = async (req, res) => {
     try {
         const { id } = req.params;
+        const categoriaExistente = await CategoriaModel.getById(id);
 
-        const [categoriaExistente] = await pool.query(
-            'SELECT id FROM categorias WHERE id = ?',
-            [id]
-        );
-
-        if (categoriaExistente.length === 0) {
+        if (!categoriaExistente) {
             return res.status(404).json({
                 mensaje: 'Categoría no encontrada',
             });
         }
 
-        await pool.query(
-            'DELETE FROM categorias WHERE id = ?',
-            [id]
-        );
+        await CategoriaModel.deleteById(id);
 
         res.status(200).json({
             mensaje: 'Categoría eliminada correctamente',

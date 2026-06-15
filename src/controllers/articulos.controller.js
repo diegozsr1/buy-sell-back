@@ -1,10 +1,9 @@
-const pool = require('../db');
+const ArticuloModel = require('../models/articulos.model.js');
 
 // GET /articulos
 const getArticulos = async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM articulos');
-
+        const rows = await ArticuloModel.getAll();
         res.status(200).json(rows);
     } catch (error) {
         res.status(500).json({
@@ -18,19 +17,15 @@ const getArticulos = async (req, res) => {
 const getArticuloById = async (req, res) => {
     try {
         const { id } = req.params;
+        const articulo = await ArticuloModel.getById(id);
 
-        const [rows] = await pool.query(
-            'SELECT * FROM articulos WHERE id = ?',
-            [id]
-        );
-
-        if (rows.length === 0) {
+        if (!articulo) {
             return res.status(404).json({
                 mensaje: 'Artículo no encontrado',
             });
         }
 
-        res.status(200).json(rows[0]);
+        res.status(200).json(articulo);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener el artículo',
@@ -66,32 +61,19 @@ const createArticulo = async (req, res) => {
             });
         }
 
-        const [result] = await pool.query(
-            `INSERT INTO articulos
-            (
-                usuarios_id,
-                titulo,
-                descripcion,
-                categorias_id,
-                precio,
-                estado_conservacion_id,
-                estado_articulo_id
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [
-                usuarios_id,
-                titulo,
-                descripcion,
-                categorias_id,
-                precio,
-                estado_conservacion_id,
-                estado_articulo_id,
-            ]
-        );
+        const resultado = await ArticuloModel.create({
+            usuarios_id,
+            titulo,
+            descripcion,
+            categorias_id,
+            precio,
+            estado_conservacion_id,
+            estado_articulo_id,
+        });
 
         res.status(201).json({
             mensaje: 'Artículo creado correctamente',
-            id: result.insertId,
+            id: resultado.id,
         });
     } catch (error) {
         res.status(500).json({
@@ -105,12 +87,9 @@ const createArticulo = async (req, res) => {
 const updateArticulo = async (req, res) => {
     try {
         const { id } = req.params;
+        const articuloExistente = await ArticuloModel.getById(id);
 
-        const [
-            articuloExistente,
-        ] = await pool.query('SELECT id FROM articulos WHERE id = ?', [id]);
-
-        if (articuloExistente.length === 0) {
+        if (!articuloExistente) {
             return res.status(404).json({
                 mensaje: 'Artículo no encontrado',
             });
@@ -126,29 +105,15 @@ const updateArticulo = async (req, res) => {
             estado_articulo_id,
         } = req.body;
 
-        await pool.query(
-            `UPDATE articulos
-             SET
-                usuarios_id = ?,
-                titulo = ?,
-                descripcion = ?,
-                categorias_id = ?,
-                precio = ?,
-                estado_conservacion_id = ?,
-                estado_articulo_id = ?,
-                updated_at = NOW()
-             WHERE id = ?`,
-            [
-                usuarios_id,
-                titulo,
-                descripcion,
-                categorias_id,
-                precio,
-                estado_conservacion_id,
-                estado_articulo_id,
-                id,
-            ]
-        );
+        await ArticuloModel.update(id, {
+            usuarios_id,
+            titulo,
+            descripcion,
+            categorias_id,
+            precio,
+            estado_conservacion_id,
+            estado_articulo_id,
+        });
 
         res.status(200).json({
             mensaje: 'Artículo actualizado correctamente',
@@ -165,18 +130,15 @@ const updateArticulo = async (req, res) => {
 const deleteArticulo = async (req, res) => {
     try {
         const { id } = req.params;
+        const articuloExistente = await ArticuloModel.getById(id);
 
-        const [
-            articuloExistente,
-        ] = await pool.query('SELECT id FROM articulos WHERE id = ?', [id]);
-
-        if (articuloExistente.length === 0) {
+        if (!articuloExistente) {
             return res.status(404).json({
                 mensaje: 'Artículo no encontrado',
             });
         }
 
-        await pool.query('DELETE FROM articulos WHERE id = ?', [id]);
+        await ArticuloModel.deleteById(id);
 
         res.status(200).json({
             mensaje: 'Artículo eliminado correctamente',

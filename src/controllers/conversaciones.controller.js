@@ -1,12 +1,9 @@
-const pool = require('../db');
+const ConversacionModel = require('../models/conversaciones.model.js');
 
 // GET /conversaciones
 const getConversaciones = async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            'SELECT * FROM conversaciones'
-        );
-
+        const rows = await ConversacionModel.getAll();
         res.status(200).json(rows);
     } catch (error) {
         res.status(500).json({
@@ -20,19 +17,15 @@ const getConversaciones = async (req, res) => {
 const getConversacionById = async (req, res) => {
     try {
         const { id } = req.params;
+        const conversacion = await ConversacionModel.getById(id);
 
-        const [rows] = await pool.query(
-            'SELECT * FROM conversaciones WHERE id = ?',
-            [id]
-        );
-
-        if (rows.length === 0) {
+        if (!conversacion) {
             return res.status(404).json({
                 mensaje: 'Conversación no encontrada',
             });
         }
 
-        res.status(200).json(rows[0]);
+        res.status(200).json(conversacion);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener la conversación',
@@ -52,16 +45,14 @@ const createConversacion = async (req, res) => {
             });
         }
 
-        const [result] = await pool.query(
-            `INSERT INTO conversaciones
-            (comprador_id, articulos_id)
-            VALUES (?, ?)`,
-            [comprador_id, articulos_id]
-        );
+        const resultado = await ConversacionModel.create({
+            comprador_id,
+            articulos_id,
+        });
 
         res.status(201).json({
             mensaje: 'Conversación creada correctamente',
-            id: result.insertId,
+            id: resultado.id,
         });
     } catch (error) {
         res.status(500).json({
@@ -75,13 +66,9 @@ const createConversacion = async (req, res) => {
 const updateConversacion = async (req, res) => {
     try {
         const { id } = req.params;
+        const conversacionExistente = await ConversacionModel.getById(id);
 
-        const [conversacionExistente] = await pool.query(
-            'SELECT id FROM conversaciones WHERE id = ?',
-            [id]
-        );
-
-        if (conversacionExistente.length === 0) {
+        if (!conversacionExistente) {
             return res.status(404).json({
                 mensaje: 'Conversación no encontrada',
             });
@@ -95,14 +82,7 @@ const updateConversacion = async (req, res) => {
             });
         }
 
-        await pool.query(
-            `UPDATE conversaciones
-             SET comprador_id = ?,
-                 articulos_id = ?,
-                 updated_at = NOW()
-             WHERE id = ?`,
-            [comprador_id, articulos_id, id]
-        );
+        await ConversacionModel.update(id, { comprador_id, articulos_id });
 
         res.status(200).json({
             mensaje: 'Conversación actualizada correctamente',
@@ -119,22 +99,15 @@ const updateConversacion = async (req, res) => {
 const deleteConversacion = async (req, res) => {
     try {
         const { id } = req.params;
+        const conversacionExistente = await ConversacionModel.getById(id);
 
-        const [conversacionExistente] = await pool.query(
-            'SELECT id FROM conversaciones WHERE id = ?',
-            [id]
-        );
-
-        if (conversacionExistente.length === 0) {
+        if (!conversacionExistente) {
             return res.status(404).json({
                 mensaje: 'Conversación no encontrada',
             });
         }
 
-        await pool.query(
-            'DELETE FROM conversaciones WHERE id = ?',
-            [id]
-        );
+        await ConversacionModel.deleteById(id);
 
         res.status(200).json({
             mensaje: 'Conversación eliminada correctamente',

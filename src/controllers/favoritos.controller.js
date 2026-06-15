@@ -1,12 +1,9 @@
-const pool = require('../db');
+const FavoritoModel = require('../models/favoritos.model.js');
 
 // GET /favoritos
 const getFavoritos = async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            'SELECT * FROM favoritos'
-        );
-
+        const rows = await FavoritoModel.getAll();
         res.status(200).json(rows);
     } catch (error) {
         res.status(500).json({
@@ -20,19 +17,15 @@ const getFavoritos = async (req, res) => {
 const getFavoritoById = async (req, res) => {
     try {
         const { id } = req.params;
+        const favorito = await FavoritoModel.getById(id);
 
-        const [rows] = await pool.query(
-            'SELECT * FROM favoritos WHERE id = ?',
-            [id]
-        );
-
-        if (rows.length === 0) {
+        if (!favorito) {
             return res.status(404).json({
                 mensaje: 'Favorito no encontrado',
             });
         }
 
-        res.status(200).json(rows[0]);
+        res.status(200).json(favorito);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener el favorito',
@@ -52,16 +45,14 @@ const createFavorito = async (req, res) => {
             });
         }
 
-        const [result] = await pool.query(
-            `INSERT INTO favoritos
-            (usuarios_id, articulos_id)
-            VALUES (?, ?)`,
-            [usuarios_id, articulos_id]
-        );
+        const resultado = await FavoritoModel.create({
+            usuarios_id,
+            articulos_id,
+        });
 
         res.status(201).json({
             mensaje: 'Favorito creado correctamente',
-            id: result.insertId,
+            id: resultado.id,
         });
     } catch (error) {
         res.status(500).json({
@@ -75,13 +66,9 @@ const createFavorito = async (req, res) => {
 const updateFavorito = async (req, res) => {
     try {
         const { id } = req.params;
+        const favoritoExistente = await FavoritoModel.getById(id);
 
-        const [favoritoExistente] = await pool.query(
-            'SELECT id FROM favoritos WHERE id = ?',
-            [id]
-        );
-
-        if (favoritoExistente.length === 0) {
+        if (!favoritoExistente) {
             return res.status(404).json({
                 mensaje: 'Favorito no encontrado',
             });
@@ -95,13 +82,7 @@ const updateFavorito = async (req, res) => {
             });
         }
 
-        await pool.query(
-            `UPDATE favoritos
-             SET usuarios_id = ?,
-                 articulos_id = ?
-             WHERE id = ?`,
-            [usuarios_id, articulos_id, id]
-        );
+        await FavoritoModel.update(id, { usuarios_id, articulos_id });
 
         res.status(200).json({
             mensaje: 'Favorito actualizado correctamente',
@@ -118,22 +99,15 @@ const updateFavorito = async (req, res) => {
 const deleteFavorito = async (req, res) => {
     try {
         const { id } = req.params;
+        const favoritoExistente = await FavoritoModel.getById(id);
 
-        const [favoritoExistente] = await pool.query(
-            'SELECT id FROM favoritos WHERE id = ?',
-            [id]
-        );
-
-        if (favoritoExistente.length === 0) {
+        if (!favoritoExistente) {
             return res.status(404).json({
                 mensaje: 'Favorito no encontrado',
             });
         }
 
-        await pool.query(
-            'DELETE FROM favoritos WHERE id = ?',
-            [id]
-        );
+        await FavoritoModel.deleteById(id);
 
         res.status(200).json({
             mensaje: 'Favorito eliminado correctamente',
