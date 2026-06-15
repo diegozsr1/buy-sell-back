@@ -1,4 +1,76 @@
 module.exports = {
+    Valoracion: {
+        type: 'object',
+        properties: {
+            id: { type: 'integer', example: 1 },
+            usuario_valorador_id: {
+                type: 'integer',
+                example: 3,
+                description: 'ID del usuario que deja la valoración',
+            },
+            articulos_id: {
+                type: 'integer',
+                example: 12,
+                description: 'ID del artículo valorado',
+            },
+            puntuacion: {
+                type: 'number',
+                format: 'float',
+                minimum: 0,
+                maximum: 5,
+                example: 4.5,
+                description: 'Puntuación otorgada al artículo',
+            },
+            mensaje: {
+                type: 'string',
+                example: 'Muy buen estado y trato excelente.',
+                description: 'Comentario asociado a la valoración',
+            },
+            creada_en: {
+                type: 'string',
+                format: 'date-time',
+                example: '2026-06-15T10:30:00.000Z',
+            },
+        },
+    },
+    ValoracionRequest: {
+        type: 'object',
+        required: ['usuario_valorador_id', 'articulos_id', 'puntuacion', 'mensaje'],
+        properties: {
+            usuario_valorador_id: {
+                type: 'integer',
+                example: 3,
+            },
+            articulos_id: {
+                type: 'integer',
+                example: 12,
+            },
+            puntuacion: {
+                type: 'number',
+                format: 'float',
+                minimum: 0,
+                maximum: 5,
+                example: 4.5,
+            },
+            mensaje: {
+                type: 'string',
+                example: 'Muy buen estado y trato excelente.',
+            },
+        },
+    },
+    ValoracionCreateResponse: {
+        type: 'object',
+        properties: {
+            id: { type: 'integer', example: 1 },
+            mensaje: { type: 'string', example: 'Valoración creada correctamente' },
+        },
+    },
+    ValoracionMensajeResponse: {
+        type: 'object',
+        properties: {
+            mensaje: { type: 'string', example: 'Valoración actualizada correctamente' },
+        },
+    },
     PromedioValoracionesRecibidasResponse: {
         type: 'object',
         properties: {

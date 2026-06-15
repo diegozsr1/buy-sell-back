@@ -67,10 +67,221 @@ const {
  *               error: Ha habido un error al consultar los datos
  */
 router.get('/usuario/:usuarioId/promedio', getPromedioRecibidasByUsuario);
+
+/**
+ * @swagger
+ * /api/valoraciones:
+ *   get:
+ *     summary: Listar valoraciones
+ *     description: Devuelve todas las valoraciones registradas en la base de datos.
+ *     tags: [Valoraciones]
+ *     responses:
+ *       200:
+ *         description: Lista de valoraciones
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Valoracion'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al consultar los datos
+ */
 router.get('/', getValoraciones);
+
+/**
+ * @swagger
+ * /api/valoraciones/{id}:
+ *   get:
+ *     summary: Obtener una valoración por ID
+ *     description: Devuelve los datos de una valoración concreta.
+ *     tags: [Valoraciones]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID de la valoración
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Valoración encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Valoracion'
+ *       404:
+ *         description: Valoración no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValoracionMensajeResponse'
+ *             example:
+ *               mensaje: Valoración no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al consultar los datos
+ */
 router.get('/:id', getValoracionById);
+
+/**
+ * @swagger
+ * /api/valoraciones:
+ *   post:
+ *     summary: Crear una valoración
+ *     description: Registra una nueva valoración para un artículo.
+ *     tags: [Valoraciones]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ValoracionRequest'
+ *           example:
+ *             usuario_valorador_id: 3
+ *             articulos_id: 12
+ *             puntuacion: 4.5
+ *             mensaje: Muy buen estado y trato excelente.
+ *     responses:
+ *       201:
+ *         description: Valoración creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValoracionCreateResponse'
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al crear la valoración
+ */
 router.post('/', createValoracion);
+
+/**
+ * @swagger
+ * /api/valoraciones/{id}:
+ *   put:
+ *     summary: Actualizar una valoración
+ *     description: Modifica los datos de una valoración existente.
+ *     tags: [Valoraciones]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID de la valoración
+ *         example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ValoracionRequest'
+ *           example:
+ *             usuario_valorador_id: 3
+ *             articulos_id: 12
+ *             puntuacion: 5
+ *             mensaje: Excelente experiencia de compra.
+ *     responses:
+ *       200:
+ *         description: Valoración actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValoracionMensajeResponse'
+ *             example:
+ *               mensaje: Valoración actualizada correctamente
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       404:
+ *         description: Valoración no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValoracionMensajeResponse'
+ *             example:
+ *               mensaje: Valoración no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al actualizar la valoración
+ */
 router.put('/:id', updateValoracion);
+
+/**
+ * @swagger
+ * /api/valoraciones/{id}:
+ *   delete:
+ *     summary: Eliminar una valoración
+ *     description: Elimina una valoración por su ID.
+ *     tags: [Valoraciones]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID de la valoración
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Valoración eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValoracionMensajeResponse'
+ *             example:
+ *               mensaje: Valoración eliminada correctamente
+ *       404:
+ *         description: Valoración no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValoracionMensajeResponse'
+ *             example:
+ *               mensaje: Valoración no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al eliminar la valoración
+ */
 router.delete('/:id', deleteValoracion);
 
 module.exports = router;
