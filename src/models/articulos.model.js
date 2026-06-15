@@ -97,10 +97,25 @@ const deleteById = async (id) => {
     return result.affectedRows > 0;
 };
 
+const countPublicadosByUsuarioId = async (usuarioId) => {
+    const [rows] = await db.query(
+        `SELECT COUNT(*) AS total
+         FROM articulos
+         WHERE usuarios_id = ? AND estado_articulo_id = 'Publicado'`,
+        [usuarioId]
+    );
+
+    return {
+        usuario_id: usuarioId,
+        total_publicados: Number(rows[0].total),
+    };
+};
+
 module.exports = {
     getAll,
     getById,
     create,
     update,
     deleteById,
+    countPublicadosByUsuarioId,
 };

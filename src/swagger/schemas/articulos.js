@@ -54,4 +54,15 @@ module.exports = {
             },
         },
     },
+    ArticulosPublicadosResponse: {
+        type: 'object',
+        properties: {
+            usuario_id: { type: 'integer', example: 2 },
+            total_publicados: {
+                type: 'integer',
+                example: 5,
+                description: 'Número de artículos con estado Publicado del usuario.',
+            },
+        },
+    },
 };

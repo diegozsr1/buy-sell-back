@@ -1,4 +1,17 @@
 const ArticuloModel = require('../models/articulos.model.js');
+const { articuloUsuarioIdSchema } = require('../schemas/articulos.schema.js');
+
+const validationOptions = { abortEarly: false, stripUnknown: true };
+
+const handleValidationError = (error, res) => {
+    if (error.name === 'ValidationError') {
+        return res.status(400).json({
+            error: 'Error de validación',
+            detalles: error.errors,
+        });
+    }
+    return null;
+};
 
 // GET /articulos
 const getArticulos = async (req, res) => {
@@ -151,9 +164,25 @@ const deleteArticulo = async (req, res) => {
     }
 };
 
+const getArticulosPublicadosByUsuario = async (req, res) => {
+    try {
+        const { usuarioId } = await articuloUsuarioIdSchema.validate(req.params, validationOptions);
+        const resultado = await ArticuloModel.countPublicadosByUsuarioId(usuarioId);
+        res.status(200).json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({
+            mensaje: 'Error al obtener los artículos publicados',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     getArticulos,
     getArticuloById,
+    getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
     deleteArticulo,

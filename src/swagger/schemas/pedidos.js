@@ -24,4 +24,21 @@ module.exports = {
             direccion_envio: { type: 'string', maxLength: 255, example: 'Calle Mayor 10, Madrid' },
         },
     },
+    VentasUsuarioResponse: {
+        type: 'object',
+        properties: {
+            usuario_id: { type: 'integer', example: 2 },
+            total_ventas: {
+                type: 'integer',
+                example: 3,
+                description: 'Número de pedidos completados de los artículos del usuario.',
+            },
+            importe_total: {
+                type: 'number',
+                format: 'float',
+                example: 450.75,
+                description: 'Suma de precios de los artículos vendidos en pedidos completados.',
+            },
+        },
+    },
 };

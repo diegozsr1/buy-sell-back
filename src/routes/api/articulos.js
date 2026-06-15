@@ -2,6 +2,7 @@ const router = require('express').Router();
 const {
     getArticulos,
     getArticuloById,
+    getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
     deleteArticulo,
@@ -38,6 +39,47 @@ const {
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/', getArticulos);
+
+/**
+ * @swagger
+ * /api/articulos/usuario/{usuarioId}/publicados:
+ *   get:
+ *     summary: Artículos publicados por un usuario
+ *     description: Devuelve el número de artículos con estado Publicado que ha publicado el usuario indicado.
+ *     tags: [Artículos]
+ *     parameters:
+ *       - in: path
+ *         name: usuarioId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario vendedor
+ *         example: 2
+ *     responses:
+ *       200:
+ *         description: Total de artículos publicados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ArticulosPublicadosResponse'
+ *             example:
+ *               usuario_id: 2
+ *               total_publicados: 5
+ *       400:
+ *         description: ID de usuario no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeErrorResponse'
+ */
+router.get('/usuario/:usuarioId/publicados', getArticulosPublicadosByUsuario);
 
 /**
  * @swagger

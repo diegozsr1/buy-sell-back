@@ -54,10 +54,28 @@ const deleteById = async (id) => {
     return result.affectedRows > 0;
 };
 
+const getVentasByUsuarioId = async (usuarioId) => {
+    const [rows] = await db.query(
+        `SELECT COUNT(p.id) AS total_ventas,
+                COALESCE(SUM(a.precio), 0) AS importe_total
+         FROM pedidos p
+         INNER JOIN articulos a ON a.id = p.articulos_id
+         WHERE a.usuarios_id = ? AND p.estado = 'Completado'`,
+        [usuarioId]
+    );
+
+    return {
+        usuario_id: usuarioId,
+        total_ventas: Number(rows[0].total_ventas),
+        importe_total: Number(rows[0].importe_total),
+    };
+};
+
 module.exports = {
     getAll,
     getById,
     create,
     update,
     deleteById,
+    getVentasByUsuarioId,
 };

@@ -1,5 +1,9 @@
 const PedidoModel = require('../models/pedidos.model.js');
-const { pedidoIdSchema, pedidoSchema } = require('../schemas/pedidos.schema.js');
+const {
+    pedidoIdSchema,
+    pedidoSchema,
+    pedidoUsuarioIdSchema,
+} = require('../schemas/pedidos.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
@@ -90,9 +94,22 @@ const deletePedido = async (req, res) => {
     }
 };
 
+const getVentasByUsuario = async (req, res) => {
+    try {
+        const { usuarioId } = await pedidoUsuarioIdSchema.validate(req.params, validationOptions);
+        const resultado = await PedidoModel.getVentasByUsuarioId(usuarioId);
+        res.json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
 module.exports = {
     getPedidos,
     getPedidoById,
+    getVentasByUsuario,
     createPedido,
     updatePedido,
     deletePedido,
