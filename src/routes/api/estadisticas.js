@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getDashboard } = require('../../controllers/estadisticas.controller');
+const { getDashboard, getVentasPorMeses } = require('../../controllers/estadisticas.controller');
 
 /**
  * @swagger
@@ -49,5 +49,54 @@ const { getDashboard } = require('../../controllers/estadisticas.controller');
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/dashboard', getDashboard);
+
+/**
+ * @swagger
+ * /api/estadisticas/ventas-mensuales:
+ *   get:
+ *     summary: Ventas por meses (gráfico)
+ *     description: |
+ *       Devuelve las ventas agrupadas por mes en formato compatible con Chart.js.
+ *       Suma el precio de los artículos en pedidos completados.
+ *     tags: [Estadísticas]
+ *     parameters:
+ *       - in: query
+ *         name: meses
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           default: 6
+ *         description: Número de meses a mostrar ( por defecto 6 si no se especifica)
+ *         example: 6
+ *     responses:
+ *       200:
+ *         description: Datos del gráfico de ventas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/VentasMensualesChartResponse'
+ *             example:
+ *               type: bar
+ *               data:
+ *                 labels: [Ene, Feb, Mar, Abr, May, Jun]
+ *                 datasets:
+ *                   - label: Ventas
+ *                     data: [1200, 1800, 1500, 2200, 2800, 3100]
+ *       400:
+ *         description: Parámetro no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/ventas-mensuales', getVentasPorMeses);
 
 module.exports = router;

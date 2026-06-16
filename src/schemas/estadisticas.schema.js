@@ -10,6 +10,19 @@ const dashboardQuerySchema = yup.object({
         .default('1m'),
 });
 
+const ventasMensualesQuerySchema = yup.object({
+    meses: yup
+        .number()
+        .integer('El número de meses debe ser un entero')
+        .min(1, 'Debe mostrar al menos 1 mes')
+        .max(12, 'No se pueden mostrar más de 12 meses')
+        .default(6)
+        .transform((value, originalValue) =>
+            originalValue === '' || originalValue === undefined ? 6 : Number(originalValue)
+        ),
+});
+
 module.exports = {
     dashboardQuerySchema,
+    ventasMensualesQuerySchema,
 };

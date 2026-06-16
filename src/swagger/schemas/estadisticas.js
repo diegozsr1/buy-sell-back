@@ -47,4 +47,34 @@ module.exports = {
             articulos_retirados: metricaConVariacion,
         },
     },
+    VentasMensualesChartResponse: {
+        type: 'object',
+        properties: {
+            type: { type: 'string', example: 'bar' },
+            data: {
+                type: 'object',
+                properties: {
+                    labels: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        example: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    },
+                    datasets: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                label: { type: 'string', example: 'Ventas' },
+                                data: {
+                                    type: 'array',
+                                    items: { type: 'number' },
+                                    example: [1200, 1800, 1500, 2200, 2800, 3100],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
 };

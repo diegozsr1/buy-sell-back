@@ -34,8 +34,28 @@ const calcularVariacionPorcentaje = (actual, anterior) => {
     return Math.round(((actual - anterior) / anterior) * 100);
 };
 
+const MESES_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+const getUltimosMeses = (cantidad) => {
+    const meses = [];
+    const ahora = new Date();
+
+    for (let i = cantidad - 1; i >= 0; i--) {
+        const fecha = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
+        meses.push({
+            anio: fecha.getFullYear(),
+            mes: fecha.getMonth() + 1,
+            label: MESES_ES[fecha.getMonth()],
+        });
+    }
+
+    return meses;
+};
+
 module.exports = {
     TEMPORALIDADES,
     getRangosPorTemporalidad,
     calcularVariacionPorcentaje,
+    MESES_ES,
+    getUltimosMeses,
 };

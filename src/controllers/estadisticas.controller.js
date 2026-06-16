@@ -1,5 +1,8 @@
 const EstadisticasModel = require('../models/estadisticas.model.js');
-const { dashboardQuerySchema } = require('../schemas/estadisticas.schema.js');
+const {
+    dashboardQuerySchema,
+    ventasMensualesQuerySchema,
+} = require('../schemas/estadisticas.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
@@ -25,6 +28,19 @@ const getDashboard = async (req, res) => {
     }
 };
 
+const getVentasPorMeses = async (req, res) => {
+    try {
+        const { meses } = await ventasMensualesQuerySchema.validate(req.query, validationOptions);
+        const resultado = await EstadisticasModel.getVentasPorMeses(meses);
+        res.json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al consultar las ventas' });
+    }
+};
+
 module.exports = {
     getDashboard,
+    getVentasPorMeses,
 };
