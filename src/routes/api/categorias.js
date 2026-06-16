@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const uploadIconoMiddleware = require('../../middleware/uploadIcono.middleware.js');
 const {
     getCategorias,
     getCategoriaById,
@@ -6,6 +7,15 @@ const {
     updateCategoria,
     deleteCategoria,
 } = require('../../controllers/categorias.controller');
+
+const handleIconoUpload = (req, res, next) => {
+    uploadIconoMiddleware.single('icono')(req, res, (error) => {
+        if (error) {
+            return res.status(400).json({ mensaje: error.message });
+        }
+        next();
+    });
+};
 
 /**
  * @swagger
@@ -83,9 +93,21 @@ router.get('/:id', getCategoriaById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/CategoriaRequest'
+ *             type: object
+ *             required: [nombre, descripcion]
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 example: Electrónica
+ *               descripcion:
+ *                 type: string
+ *                 example: Artículos electrónicos y gadgets
+ *               icono:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen del icono de la categoría (se sube a Cloudinary)
  *     responses:
  *       201:
  *         description: Categoría creada
@@ -109,7 +131,7 @@ router.get('/:id', getCategoriaById);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.post('/', createCategoria);
+router.post('/', handleIconoUpload, createCategoria);
 
 /**
  * @swagger
@@ -128,9 +150,21 @@ router.post('/', createCategoria);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/CategoriaRequest'
+ *             type: object
+ *             required: [nombre, descripcion]
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 example: Electrónica
+ *               descripcion:
+ *                 type: string
+ *                 example: Artículos electrónicos y gadgets
+ *               icono:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen del icono de la categoría (se sube a Cloudinary)
  *     responses:
  *       200:
  *         description: Categoría actualizada
@@ -157,7 +191,7 @@ router.post('/', createCategoria);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.put('/:id', updateCategoria);
+router.put('/:id', handleIconoUpload, updateCategoria);
 
 /**
  * @swagger

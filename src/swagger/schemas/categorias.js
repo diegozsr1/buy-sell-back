@@ -5,6 +5,12 @@ module.exports = {
             id: { type: 'integer', example: 1 },
             nombre: { type: 'string', example: 'Electrónica' },
             descripcion: { type: 'string', example: 'Artículos electrónicos y gadgets' },
+            icono: {
+                type: 'string',
+                nullable: true,
+                example: 'https://res.cloudinary.com/djqduukxt/image/upload/v123/categorias/iconos/abc.png',
+                description: 'URL del icono almacenado en Cloudinary',
+            },
         },
     },
     CategoriaRequest: {
@@ -13,6 +19,11 @@ module.exports = {
         properties: {
             nombre: { type: 'string', maxLength: 45, example: 'Electrónica' },
             descripcion: { type: 'string', maxLength: 255, example: 'Artículos electrónicos y gadgets' },
+            icono: {
+                type: 'string',
+                format: 'binary',
+                description: 'Archivo de imagen del icono',
+            },
         },
     },
 };

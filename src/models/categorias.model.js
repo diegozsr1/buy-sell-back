@@ -14,25 +14,25 @@ const getById = async (id) => {
 };
 
 const create = async (data) => {
-    const { nombre, descripcion } = data;
+    const { nombre, descripcion, icono } = data;
 
     const [result] = await db.query(
-        `INSERT INTO categorias (nombre, descripcion)
-         VALUES (?, ?)`,
-        [nombre, descripcion]
+        `INSERT INTO categorias (nombre, descripcion, icono)
+         VALUES (?, ?, ?)`,
+        [nombre, descripcion, icono ?? null]
     );
 
     return { id: result.insertId };
 };
 
 const update = async (id, data) => {
-    const { nombre, descripcion } = data;
+    const { nombre, descripcion, icono } = data;
 
     const [result] = await db.query(
         `UPDATE categorias
-         SET nombre = ?, descripcion = ?
+         SET nombre = ?, descripcion = ?, icono = ?
          WHERE id = ?`,
-        [nombre, descripcion, id]
+        [nombre, descripcion, icono ?? null, id]
     );
 
     return result.affectedRows > 0;

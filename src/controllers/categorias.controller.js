@@ -1,4 +1,10 @@
 const CategoriaModel = require('../models/categorias.model.js');
+const { uploadIcono } = require('../services/cloudinary.service.js');
+
+const getIconoUrl = async (file) => {
+    if (!file) return null;
+    return uploadIcono(file);
+};
 
 // GET /categorias
 const getCategorias = async (req, res) => {
@@ -45,11 +51,18 @@ const createCategoria = async (req, res) => {
             });
         }
 
-        const resultado = await CategoriaModel.create({ nombre, descripcion });
+        const icono = await getIconoUrl(req.file);
+
+        const resultado = await CategoriaModel.create({
+            nombre,
+            descripcion,
+            icono,
+        });
 
         res.status(201).json({
             mensaje: 'Categoría creada correctamente',
             id: resultado.id,
+            icono,
         });
     } catch (error) {
         res.status(500).json({
@@ -79,10 +92,15 @@ const updateCategoria = async (req, res) => {
             });
         }
 
-        await CategoriaModel.update(id, { nombre, descripcion });
+        const icono = req.file
+            ? await getIconoUrl(req.file)
+            : categoriaExistente.icono;
+
+        await CategoriaModel.update(id, { nombre, descripcion, icono });
 
         res.status(200).json({
             mensaje: 'Categoría actualizada correctamente',
+            icono,
         });
     } catch (error) {
         res.status(500).json({
