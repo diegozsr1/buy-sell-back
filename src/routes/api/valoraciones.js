@@ -7,6 +7,7 @@ const {
     updateValoracion,
     deleteValoracion,
 } = require('../../controllers/valoraciones.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -74,6 +75,8 @@ router.get('/usuario/:usuarioId/promedio', getPromedioRecibidasByUsuario);
  *   get:
  *     summary: Listar valoraciones
  *     description: Devuelve todas las valoraciones registradas en la base de datos.
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Valoraciones]
  *     responses:
  *       200:
@@ -93,7 +96,7 @@ router.get('/usuario/:usuarioId/promedio', getPromedioRecibidasByUsuario);
  *             example:
  *               error: Ha habido un error al consultar los datos
  */
-router.get('/', getValoraciones);
+router.get('/', checkToken, getValoraciones);
 
 /**
  * @swagger
