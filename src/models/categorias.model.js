@@ -1,8 +1,18 @@
 const db = require('../config/db.js');
 
 const getAll = async () => {
-    const [rows] = await db.query('SELECT * FROM categorias');
-    return rows;
+    const [rows] = await db.query(
+        `SELECT c.*, COUNT(a.id) AS total_articulos
+         FROM categorias c
+         LEFT JOIN articulos a ON a.categorias_id = c.id
+         GROUP BY c.id
+         ORDER BY c.nombre`
+    );
+
+    return rows.map((row) => ({
+        ...row,
+        total_articulos: Number(row.total_articulos),
+    }));
 };
 
 const getById = async (id) => {
