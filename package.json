@@ -10,6 +10,7 @@
   "author": "Irene Olmos",
   "license": "MIT",
   "dependencies": {
+    "all-spanish-cities": "^2.2.1",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.5",

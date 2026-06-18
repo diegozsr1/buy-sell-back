@@ -72,17 +72,15 @@ router.get('/recientes', getArticulosRecientes);
  * /api/articulos/mas-vendidos:
  *   get:
  *     summary: Artículos más vendidos
- *     description: Devuelve los 10 artículos con más pedidos completados, ordenados de mayor a menor ventas.
+ *     description: Devuelve los 10 artículos con más pedidos completados y la moda de CP ponderada por ventas (provincia derivada del código postal).
  *     tags: [Artículos]
  *     responses:
  *       200:
- *         description: Lista de artículos más vendidos
+ *         description: Ranking de artículos más vendidos con resumen geográfico
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ArticuloMasVendido'
+ *               $ref: '#/components/schemas/ArticulosMasVendidosResponse'
  *       500:
  *         description: Error interno del servidor
  *         content:

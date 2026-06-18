@@ -42,8 +42,8 @@ const getArticulosRecientes = async (req, res) => {
 // GET /articulos/mas-vendidos
 const getArticulosMasVendidos = async (req, res) => {
     try {
-        const rows = await ArticuloModel.getMasVendidos(10);
-        res.status(200).json(rows);
+        const resultado = await ArticuloModel.getMasVendidos(10);
+        res.status(200).json(resultado);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener los artículos más vendidos',

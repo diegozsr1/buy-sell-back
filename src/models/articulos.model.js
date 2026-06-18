@@ -1,4 +1,5 @@
 const db = require('../config/db.js');
+const { getProvinciaFromCp, calcularZonaModa } = require('../utils/codigoPostal.utils.js');
 
 const getAll = async () => {
     const [rows] = await db.query('SELECT * FROM articulos');
@@ -24,20 +25,29 @@ const getRecientes = async () => {
 
 const getMasVendidos = async (limite = 10) => {
     const [rows] = await db.query(
-        `SELECT a.*, COUNT(p.id) AS total_ventas
+        `SELECT a.*,
+                COUNT(p.id) AS total_ventas,
+                MAX(u.cp) AS cp
          FROM articulos a
          INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado'
+         INNER JOIN usuarios u ON u.id = a.usuarios_id
          GROUP BY a.id
          ORDER BY total_ventas DESC
          LIMIT ?`,
         [limite]
     );
 
-    return rows.map((row) => ({
+    const articulos = rows.map((row) => ({
         ...row,
         total_ventas: Number(row.total_ventas),
         precio: Number(row.precio),
+        provincia: getProvinciaFromCp(row.cp),
     }));
+
+    return {
+        articulos,
+        zona_moda: calcularZonaModa(articulos),
+    };
 };
 
 const create = async (data) => {
