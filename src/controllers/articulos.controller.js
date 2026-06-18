@@ -39,6 +39,19 @@ const getArticulosRecientes = async (req, res) => {
     }
 };
 
+// GET /articulos/mas-vendidos
+const getArticulosMasVendidos = async (req, res) => {
+    try {
+        const rows = await ArticuloModel.getMasVendidos(10);
+        res.status(200).json(rows);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener los artículos más vendidos',
+            error: error.message,
+        });
+    }
+};
+
 // GET /articulos/:id
 const getArticuloById = async (req, res) => {
     try {
@@ -195,6 +208,7 @@ const getArticulosPublicadosByUsuario = async (req, res) => {
 module.exports = {
     getArticulos,
     getArticulosRecientes,
+    getArticulosMasVendidos,
     getArticuloById,
     getArticulosPublicadosByUsuario,
     createArticulo,

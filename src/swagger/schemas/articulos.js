@@ -65,4 +65,19 @@ module.exports = {
             },
         },
     },
+    ArticuloMasVendido: {
+        allOf: [
+            { $ref: '#/components/schemas/Articulo' },
+            {
+                type: 'object',
+                properties: {
+                    total_ventas: {
+                        type: 'integer',
+                        example: 15,
+                        description: 'Número de pedidos completados del artículo',
+                    },
+                },
+            },
+        ],
+    },
 };

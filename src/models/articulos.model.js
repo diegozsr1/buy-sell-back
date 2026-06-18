@@ -22,6 +22,24 @@ const getRecientes = async () => {
     return rows;
 };
 
+const getMasVendidos = async (limite = 10) => {
+    const [rows] = await db.query(
+        `SELECT a.*, COUNT(p.id) AS total_ventas
+         FROM articulos a
+         INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado'
+         GROUP BY a.id
+         ORDER BY total_ventas DESC
+         LIMIT ?`,
+        [limite]
+    );
+
+    return rows.map((row) => ({
+        ...row,
+        total_ventas: Number(row.total_ventas),
+        precio: Number(row.precio),
+    }));
+};
+
 const create = async (data) => {
     const {
         usuarios_id,
@@ -124,6 +142,7 @@ module.exports = {
     getAll,
     getById,
     getRecientes,
+    getMasVendidos,
     create,
     update,
     deleteById,

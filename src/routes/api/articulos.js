@@ -3,6 +3,7 @@ const {
     getArticulos,
     getArticuloById,
     getArticulosRecientes,
+    getArticulosMasVendidos,
     getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
@@ -65,6 +66,31 @@ router.get('/', getArticulos);
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/recientes', getArticulosRecientes);
+
+/**
+ * @swagger
+ * /api/articulos/mas-vendidos:
+ *   get:
+ *     summary: Artículos más vendidos
+ *     description: Devuelve los 10 artículos con más pedidos completados, ordenados de mayor a menor ventas.
+ *     tags: [Artículos]
+ *     responses:
+ *       200:
+ *         description: Lista de artículos más vendidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ArticuloMasVendido'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeErrorResponse'
+ */
+router.get('/mas-vendidos', getArticulosMasVendidos);
 
 /**
  * @swagger
