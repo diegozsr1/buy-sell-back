@@ -26,6 +26,19 @@ const getArticulos = async (req, res) => {
     }
 };
 
+// GET /articulos/recientes
+const getArticulosRecientes = async (req, res) => {
+    try {
+        const rows = await ArticuloModel.getRecientes();
+        res.status(200).json(rows);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener los artículos recientes',
+            error: error.message,
+        });
+    }
+};
+
 // GET /articulos/:id
 const getArticuloById = async (req, res) => {
     try {
@@ -181,6 +194,7 @@ const getArticulosPublicadosByUsuario = async (req, res) => {
 
 module.exports = {
     getArticulos,
+    getArticulosRecientes,
     getArticuloById,
     getArticulosPublicadosByUsuario,
     createArticulo,

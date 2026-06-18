@@ -2,6 +2,7 @@ const router = require('express').Router();
 const {
     getArticulos,
     getArticuloById,
+    getArticulosRecientes,
     getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
@@ -39,6 +40,31 @@ const {
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/', getArticulos);
+
+/**
+ * @swagger
+ * /api/articulos/recientes:
+ *   get:
+ *     summary: Artículos subidos recientemente
+ *     description: Devuelve los artículos creados en los últimos 7 días, ordenados del más reciente al más antiguo.
+ *     tags: [Artículos]
+ *     responses:
+ *       200:
+ *         description: Lista de artículos recientes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Articulo'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeErrorResponse'
+ */
+router.get('/recientes', getArticulosRecientes);
 
 /**
  * @swagger

@@ -13,6 +13,15 @@ const getById = async (id) => {
     return rows[0];
 };
 
+const getRecientes = async () => {
+    const [rows] = await db.query(
+        `SELECT * FROM articulos
+         WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+         ORDER BY created_at DESC`
+    );
+    return rows;
+};
+
 const create = async (data) => {
     const {
         usuarios_id,
@@ -114,6 +123,7 @@ const countPublicadosByUsuarioId = async (usuarioId) => {
 module.exports = {
     getAll,
     getById,
+    getRecientes,
     create,
     update,
     deleteById,
