@@ -65,4 +65,66 @@ module.exports = {
             },
         },
     },
+    ArticuloMasVendido: {
+        allOf: [
+            { $ref: '#/components/schemas/Articulo' },
+            {
+                type: 'object',
+                properties: {
+                    total_ventas: {
+                        type: 'integer',
+                        example: 15,
+                        description: 'Número de pedidos completados del artículo',
+                    },
+                    cp: {
+                        type: 'string',
+                        nullable: true,
+                        example: '08001',
+                        description: 'Código postal del vendedor',
+                    },
+                    provincia: {
+                        type: 'object',
+                        nullable: true,
+                        properties: {
+                            codigo: { type: 'string', example: '08' },
+                            nombre: { type: 'string', example: 'Barcelona' },
+                        },
+                    },
+                },
+            },
+        ],
+    },
+    ArticulosMasVendidosResponse: {
+        type: 'object',
+        properties: {
+            articulos: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/ArticuloMasVendido' },
+            },
+            zona_moda: {
+                type: 'object',
+                description:
+                    'Moda ponderada por total_ventas entre los artículos del ranking (CP y provincia del vendedor)',
+                properties: {
+                    cp: {
+                        type: 'object',
+                        nullable: true,
+                        properties: {
+                            valor: { type: 'string', example: '08001' },
+                            total_ventas: { type: 'integer', example: 25 },
+                        },
+                    },
+                    provincia: {
+                        type: 'object',
+                        nullable: true,
+                        properties: {
+                            codigo: { type: 'string', example: '08' },
+                            nombre: { type: 'string', example: 'Barcelona' },
+                            total_ventas: { type: 'integer', example: 40 },
+                        },
+                    },
+                },
+            },
+        },
+    },
 };
