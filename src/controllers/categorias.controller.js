@@ -1,5 +1,5 @@
 const CategoriaModel = require('../models/categorias.model.js');
-const { uploadIcono } = require('../services/cloudinary.service.js');
+const { uploadIcono, deleteIcono } = require('../services/cloudinary.service.js');
 
 const getIconoUrl = async (file) => {
     if (!file) return null;
@@ -92,9 +92,15 @@ const updateCategoria = async (req, res) => {
             });
         }
 
-        const icono = req.file
-            ? await getIconoUrl(req.file)
-            : categoriaExistente.icono;
+        const iconoAnterior = categoriaExistente.icono;
+        let icono = iconoAnterior;
+
+        if (req.file) {
+            if (iconoAnterior) {
+                await deleteIcono(iconoAnterior);
+            }
+            icono = await getIconoUrl(req.file);
+        }
 
         await CategoriaModel.update(id, { nombre, descripcion, icono });
 
@@ -120,6 +126,10 @@ const deleteCategoria = async (req, res) => {
             return res.status(404).json({
                 mensaje: 'Categoría no encontrada',
             });
+        }
+
+        if (categoriaExistente.icono) {
+            await deleteIcono(categoriaExistente.icono);
         }
 
         await CategoriaModel.deleteById(id);
