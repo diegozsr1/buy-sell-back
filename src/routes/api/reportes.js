@@ -6,7 +6,7 @@ const {
     updateReporte,
     deleteReporte,
 } = require('../../controllers/reportes.controller');
-const { checkToken } = require('../../middleware/auth.middleware');
+const { checkToken, checkModerator } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -39,7 +39,7 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', checkToken, getReportes);
+router.get('/', checkToken, checkModerator, getReportes);
 
 /**
  * @swagger

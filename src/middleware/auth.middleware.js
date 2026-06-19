@@ -25,12 +25,24 @@ const checkToken = async (req, res, next) => {
         return res.status(401).json({ error: 'Usuario no encontrado' });
     }
     req.usuario = user;
-
-    console.log(req.usuario);
     
     next();
 }
 
+const checkAdmin = (req, res, next) => {
+    // chequea rol de administrador. lo recibe de checktoken mediante req.usuario.rol
+    if (req.usuario.roles_id !== 'Administrador') return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Administrador' });
+    next();
+}
+
+const checkModerator = (req, res, next) => {
+    // chequea rol de moderador. lo recibe de checktoken mediante req.usuario.rol
+    if (req.usuario.roles_id !== 'Moderador') return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Moderador' });
+    next();
+}
+
 module.exports = {
-    checkToken
+    checkToken,
+    checkAdmin,
+    checkModerator
 };

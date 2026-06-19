@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { getDashboard, getVentasPorMeses } = require('../../controllers/estadisticas.controller');
-const { checkToken } = require('../../middleware/auth.middleware');
+const { checkToken, checkAdmin } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -51,7 +51,7 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/dashboard', checkToken, getDashboard);
+router.get('/dashboard', checkToken, checkAdmin, getDashboard);
 
 /**
  * @swagger
