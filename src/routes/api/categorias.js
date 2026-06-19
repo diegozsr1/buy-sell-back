@@ -7,7 +7,7 @@ const {
     updateCategoria,
     deleteCategoria,
 } = require('../../controllers/categorias.controller');
-const { checkToken } = require('../../middleware/auth.middleware');
+const { checkToken, checkAdmin } = require('../../middleware/auth.middleware');
 
 const handleIconoUpload = (req, res, next) => {
     uploadIconoMiddleware.single('icono')(req, res, (error) => {
@@ -87,7 +87,7 @@ router.get('/', checkToken, getCategorias);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/:id', checkToken, getCategoriaById);
+router.get('/:id', checkToken, checkAdmin, getCategoriaById);
 
 /**
  * @swagger
@@ -138,7 +138,7 @@ router.get('/:id', checkToken, getCategoriaById);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.post('/', checkToken, handleIconoUpload, createCategoria);
+router.post('/', checkToken, checkAdmin, handleIconoUpload, createCategoria);
 
 /**
  * @swagger
@@ -200,7 +200,7 @@ router.post('/', checkToken, handleIconoUpload, createCategoria);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.put('/:id', checkToken, handleIconoUpload, updateCategoria);
+router.put('/:id', checkToken, checkAdmin, handleIconoUpload, updateCategoria);
 
 /**
  * @swagger
@@ -238,6 +238,6 @@ router.put('/:id', checkToken, handleIconoUpload, updateCategoria);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.delete('/:id', checkToken, deleteCategoria);
+router.delete('/:id', checkToken, checkAdmin, deleteCategoria);
 
 module.exports = router;

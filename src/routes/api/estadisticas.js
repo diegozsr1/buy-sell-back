@@ -102,6 +102,6 @@ router.get('/dashboard', checkToken, checkAdmin, getDashboard);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/ventas-mensuales', checkToken, getVentasPorMeses);
+router.get('/ventas-mensuales', checkToken, checkAdmin, getVentasPorMeses);
 
 module.exports = router;
