@@ -7,6 +7,7 @@ const {
     updatePedido,
     deletePedido,
 } = require('../../controllers/pedidos.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -21,6 +22,8 @@ const {
  *   get:
  *     summary: Listar pedidos
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de pedidos
@@ -37,7 +40,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', getPedidos);
+router.get('/', checkToken, getPedidos);
 
 /**
  * @swagger
@@ -46,6 +49,8 @@ router.get('/', getPedidos);
  *     summary: Ventas de un usuario
  *     description: Devuelve el número de ventas completadas y el importe total generado por los artículos publicados por el usuario indicado.
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: usuarioId
@@ -79,7 +84,7 @@ router.get('/', getPedidos);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/usuario/:usuarioId/ventas', getVentasByUsuario);
+router.get('/usuario/:usuarioId/ventas', checkToken, getVentasByUsuario);
 
 /**
  * @swagger
@@ -87,6 +92,8 @@ router.get('/usuario/:usuarioId/ventas', getVentasByUsuario);
  *   get:
  *     summary: Obtener un pedido por ID
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,7 +122,7 @@ router.get('/usuario/:usuarioId/ventas', getVentasByUsuario);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:id', getPedidoById);
+router.get('/:id', checkToken, getPedidoById);
 
 /**
  * @swagger
@@ -123,6 +130,8 @@ router.get('/:id', getPedidoById);
  *   post:
  *     summary: Crear un pedido
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -149,7 +158,7 @@ router.get('/:id', getPedidoById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', createPedido);
+router.post('/', checkToken, createPedido);
 
 /**
  * @swagger
@@ -157,6 +166,8 @@ router.post('/', createPedido);
  *   put:
  *     summary: Actualizar un pedido
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -197,7 +208,7 @@ router.post('/', createPedido);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', updatePedido);
+router.put('/:id', checkToken, updatePedido);
 
 /**
  * @swagger
@@ -205,6 +216,8 @@ router.put('/:id', updatePedido);
  *   delete:
  *     summary: Eliminar un pedido
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -233,6 +246,6 @@ router.put('/:id', updatePedido);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', deletePedido);
+router.delete('/:id', checkToken, deletePedido);
 
 module.exports = router;

@@ -6,6 +6,7 @@ const {
     updateFavorito,
     deleteFavorito,
 } = require('../../controllers/favoritos.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -20,6 +21,8 @@ const {
  *   get:
  *     summary: Listar favoritos
  *     tags: [Favoritos]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de favoritos
@@ -36,7 +39,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/', getFavoritos);
+router.get('/', checkToken, getFavoritos);
 
 /**
  * @swagger
@@ -44,6 +47,8 @@ router.get('/', getFavoritos);
  *   get:
  *     summary: Obtener un favorito por ID
  *     tags: [Favoritos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -72,7 +77,7 @@ router.get('/', getFavoritos);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/:id', getFavoritoById);
+router.get('/:id', checkToken, getFavoritoById);
 
 /**
  * @swagger
@@ -80,6 +85,8 @@ router.get('/:id', getFavoritoById);
  *   post:
  *     summary: Crear un favorito
  *     tags: [Favoritos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -109,7 +116,7 @@ router.get('/:id', getFavoritoById);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.post('/', createFavorito);
+router.post('/', checkToken, createFavorito);
 
 /**
  * @swagger
@@ -117,6 +124,8 @@ router.post('/', createFavorito);
  *   put:
  *     summary: Actualizar un favorito
  *     tags: [Favoritos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -157,7 +166,7 @@ router.post('/', createFavorito);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.put('/:id', updateFavorito);
+router.put('/:id', checkToken, updateFavorito);
 
 /**
  * @swagger
@@ -165,6 +174,8 @@ router.put('/:id', updateFavorito);
  *   delete:
  *     summary: Eliminar un favorito
  *     tags: [Favoritos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -193,6 +204,6 @@ router.put('/:id', updateFavorito);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.delete('/:id', deleteFavorito);
+router.delete('/:id', checkToken, deleteFavorito);
 
 module.exports = router;

@@ -6,6 +6,7 @@ const {
     updateArticuloFoto,
     deleteArticuloFoto,
 } = require('../../controllers/articulo_fotos.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -85,6 +86,8 @@ router.get('/:id', getArticuloFotoById);
  *   post:
  *     summary: Crear una foto de artículo
  *     description: Registra una nueva foto asociada a un artículo.
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Artículo fotos]
  *     requestBody:
  *       required: true
@@ -110,7 +113,7 @@ router.get('/:id', getArticuloFotoById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', createArticuloFoto);
+router.post('/', checkToken, createArticuloFoto);
 
 /**
  * @swagger
@@ -118,6 +121,8 @@ router.post('/', createArticuloFoto);
  *   put:
  *     summary: Actualizar una foto de artículo
  *     description: Modifica los datos de una foto existente.
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Artículo fotos]
  *     parameters:
  *       - in: path
@@ -154,7 +159,7 @@ router.post('/', createArticuloFoto);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', updateArticuloFoto);
+router.put('/:id', checkToken, updateArticuloFoto);
 
 /**
  * @swagger
@@ -162,6 +167,8 @@ router.put('/:id', updateArticuloFoto);
  *   delete:
  *     summary: Eliminar una foto de artículo
  *     description: Elimina una foto por su ID.
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Artículo fotos]
  *     parameters:
  *       - in: path
@@ -188,6 +195,6 @@ router.put('/:id', updateArticuloFoto);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', deleteArticuloFoto);
+router.delete('/:id', checkToken, deleteArticuloFoto);
 
 module.exports = router;

@@ -11,6 +11,7 @@ const {
     updateUsuarioBloqueado,
     deleteUsuario
 } = require('../../controllers/usuarios.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -26,6 +27,8 @@ const {
  *     summary: Contar usuarios
  *     description: Devuelve el número total de usuarios registrados.
  *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Total de usuarios
@@ -42,7 +45,7 @@ const {
  *             example:
  *               error: Ha habido un error al consultar los datos
  */
-router.get('/count', countUsuarios);
+router.get('/count', checkToken, countUsuarios);
 
 /**
  * @swagger
@@ -51,6 +54,8 @@ router.get('/count', countUsuarios);
  *     summary: Contar usuarios por rol
  *     description: Devuelve el número de usuarios que tienen el rol indicado.
  *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: rol
@@ -82,7 +87,7 @@ router.get('/count', countUsuarios);
  *             example:
  *               error: Ha habido un error al consultar los datos
  */
-router.get('/count/rol/:rol', countUsuariosByRol);
+router.get('/count/rol/:rol', checkToken, countUsuariosByRol);
 
 /**
  * @swagger
@@ -91,6 +96,8 @@ router.get('/count/rol/:rol', countUsuariosByRol);
  *     summary: Contar usuarios por estado de bloqueo
  *     description: Devuelve el número de usuarios bloqueados o no bloqueados según el valor indicado.
  *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: bloqueado
@@ -122,7 +129,7 @@ router.get('/count/rol/:rol', countUsuariosByRol);
  *             example:
  *               error: Ha habido un error al consultar los datos
  */
-router.get('/count/bloqueado/:bloqueado', countUsuariosByBloqueado);
+router.get('/count/bloqueado/:bloqueado', checkToken, countUsuariosByBloqueado);
 
 /**
  * @swagger
@@ -131,6 +138,8 @@ router.get('/count/bloqueado/:bloqueado', countUsuariosByBloqueado);
  *     summary: Actualizar rol de un usuario
  *     description: Actualiza únicamente el rol (roles_id) de un usuario existente.
  *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -178,7 +187,7 @@ router.get('/count/bloqueado/:bloqueado', countUsuariosByBloqueado);
  *             example:
  *               error: Ha habido un error al actualizar el rol del usuario
  */
-router.patch('/:id/rol/:rol', updateUsuarioRol);
+router.patch('/:id/rol/:rol', checkToken, updateUsuarioRol);
 
 /**
  * @swagger
@@ -187,6 +196,8 @@ router.patch('/:id/rol/:rol', updateUsuarioRol);
  *     summary: Actualizar estado de bloqueo de un usuario
  *     description: Actualiza únicamente el estado de bloqueo (bloqueado) de un usuario existente.
  *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -234,7 +245,7 @@ router.patch('/:id/rol/:rol', updateUsuarioRol);
  *             example:
  *               error: Ha habido un error al actualizar el estado de bloqueo del usuario
  */
-router.patch('/:id/bloqueado/:bloqueado', updateUsuarioBloqueado);
+router.patch('/:id/bloqueado/:bloqueado', checkToken, updateUsuarioBloqueado);
 
 /**
  * @swagger
@@ -243,6 +254,8 @@ router.patch('/:id/bloqueado/:bloqueado', updateUsuarioBloqueado);
  *     summary: Listar usuarios
  *     description: Devuelve todos los usuarios registrados (sin contraseña).
  *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de usuarios
@@ -261,7 +274,7 @@ router.patch('/:id/bloqueado/:bloqueado', updateUsuarioBloqueado);
  *             example:
  *               error: Ha habido un error al consultar los datos
  */
-router.get('/', getUsuarios);
+router.get('/', checkToken, getUsuarios);
 
 /**
  * @swagger
@@ -429,7 +442,7 @@ router.get('/', getUsuarios);
  */
 router.get('/:id', getUsuarioById);
 router.post('/', createUsuario);
-router.put('/:id', updateUsuario);
-router.delete('/:id', deleteUsuario);
+router.put('/:id', checkToken, updateUsuario);
+router.delete('/:id', checkToken, deleteUsuario);
 
 module.exports = router;

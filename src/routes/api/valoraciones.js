@@ -96,7 +96,7 @@ router.get('/usuario/:usuarioId/promedio', getPromedioRecibidasByUsuario);
  *             example:
  *               error: Ha habido un error al consultar los datos
  */
-router.get('/', checkToken, getValoraciones);
+router.get('/', getValoraciones);
 
 /**
  * @swagger
@@ -147,6 +147,8 @@ router.get('/:id', getValoracionById);
  *     summary: Crear una valoración
  *     description: Registra una nueva valoración para un artículo.
  *     tags: [Valoraciones]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -180,7 +182,7 @@ router.get('/:id', getValoracionById);
  *             example:
  *               error: Ha habido un error al crear la valoración
  */
-router.post('/', createValoracion);
+router.post('/', checkToken, createValoracion);
 
 /**
  * @swagger
@@ -189,6 +191,8 @@ router.post('/', createValoracion);
  *     summary: Actualizar una valoración
  *     description: Modifica los datos de una valoración existente.
  *     tags: [Valoraciones]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -241,7 +245,7 @@ router.post('/', createValoracion);
  *             example:
  *               error: Ha habido un error al actualizar la valoración
  */
-router.put('/:id', updateValoracion);
+router.put('/:id', checkToken, updateValoracion);
 
 /**
  * @swagger
@@ -250,6 +254,8 @@ router.put('/:id', updateValoracion);
  *     summary: Eliminar una valoración
  *     description: Elimina una valoración por su ID.
  *     tags: [Valoraciones]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -285,6 +291,6 @@ router.put('/:id', updateValoracion);
  *             example:
  *               error: Ha habido un error al eliminar la valoración
  */
-router.delete('/:id', deleteValoracion);
+router.delete('/:id', checkToken, deleteValoracion);
 
 module.exports = router;

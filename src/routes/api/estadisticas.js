@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { getDashboard, getVentasPorMeses } = require('../../controllers/estadisticas.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -17,6 +18,8 @@ const { getDashboard, getVentasPorMeses } = require('../../controllers/estadisti
  *       Devuelve las métricas del panel de administración para la temporalidad indicada.
  *       Los porcentajes de variación comparan el periodo actual con el periodo anterior del mismo tamaño.
  *     tags: [Estadísticas]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: temporalidad
@@ -48,7 +51,7 @@ const { getDashboard, getVentasPorMeses } = require('../../controllers/estadisti
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/dashboard', getDashboard);
+router.get('/dashboard', checkToken, getDashboard);
 
 /**
  * @swagger
@@ -59,6 +62,8 @@ router.get('/dashboard', getDashboard);
  *       Devuelve las ventas agrupadas por mes en formato compatible con Chart.js.
  *       Suma el precio de los artículos en pedidos completados.
  *     tags: [Estadísticas]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: meses
@@ -97,6 +102,6 @@ router.get('/dashboard', getDashboard);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/ventas-mensuales', getVentasPorMeses);
+router.get('/ventas-mensuales', checkToken, getVentasPorMeses);
 
 module.exports = router;

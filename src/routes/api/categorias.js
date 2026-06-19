@@ -7,6 +7,7 @@ const {
     updateCategoria,
     deleteCategoria,
 } = require('../../controllers/categorias.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 const handleIconoUpload = (req, res, next) => {
     uploadIconoMiddleware.single('icono')(req, res, (error) => {
@@ -30,6 +31,8 @@ const handleIconoUpload = (req, res, next) => {
  *   get:
  *     summary: Listar categorías
  *     tags: [Categorías]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de categorías
@@ -46,7 +49,7 @@ const handleIconoUpload = (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/', getCategorias);
+router.get('/', checkToken, getCategorias);
 
 /**
  * @swagger
@@ -54,6 +57,8 @@ router.get('/', getCategorias);
  *   get:
  *     summary: Obtener una categoría por ID
  *     tags: [Categorías]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -82,7 +87,7 @@ router.get('/', getCategorias);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/:id', getCategoriaById);
+router.get('/:id', checkToken, getCategoriaById);
 
 /**
  * @swagger
@@ -90,6 +95,8 @@ router.get('/:id', getCategoriaById);
  *   post:
  *     summary: Crear una categoría
  *     tags: [Categorías]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -131,7 +138,7 @@ router.get('/:id', getCategoriaById);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.post('/', handleIconoUpload, createCategoria);
+router.post('/', checkToken, handleIconoUpload, createCategoria);
 
 /**
  * @swagger
@@ -139,6 +146,8 @@ router.post('/', handleIconoUpload, createCategoria);
  *   put:
  *     summary: Actualizar una categoría
  *     tags: [Categorías]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -191,7 +200,7 @@ router.post('/', handleIconoUpload, createCategoria);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.put('/:id', handleIconoUpload, updateCategoria);
+router.put('/:id', checkToken, handleIconoUpload, updateCategoria);
 
 /**
  * @swagger
@@ -199,6 +208,8 @@ router.put('/:id', handleIconoUpload, updateCategoria);
  *   delete:
  *     summary: Eliminar una categoría
  *     tags: [Categorías]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -227,6 +238,6 @@ router.put('/:id', handleIconoUpload, updateCategoria);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.delete('/:id', deleteCategoria);
+router.delete('/:id', checkToken, deleteCategoria);
 
 module.exports = router;

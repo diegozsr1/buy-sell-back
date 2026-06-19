@@ -6,6 +6,7 @@ const {
     updateConversacion,
     deleteConversacion,
 } = require('../../controllers/conversaciones.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -20,6 +21,8 @@ const {
  *   get:
  *     summary: Listar conversaciones
  *     tags: [Conversaciones]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de conversaciones
@@ -36,7 +39,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/', getConversaciones);
+router.get('/', checkToken, getConversaciones);
 
 /**
  * @swagger
@@ -44,6 +47,8 @@ router.get('/', getConversaciones);
  *   get:
  *     summary: Obtener una conversación por ID
  *     tags: [Conversaciones]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -72,7 +77,7 @@ router.get('/', getConversaciones);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/:id', getConversacionById);
+router.get('/:id', checkToken, getConversacionById);
 
 /**
  * @swagger
@@ -80,6 +85,8 @@ router.get('/:id', getConversacionById);
  *   post:
  *     summary: Crear una conversación
  *     tags: [Conversaciones]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -109,7 +116,7 @@ router.get('/:id', getConversacionById);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.post('/', createConversacion);
+router.post('/', checkToken, createConversacion);
 
 /**
  * @swagger
@@ -117,6 +124,8 @@ router.post('/', createConversacion);
  *   put:
  *     summary: Actualizar una conversación
  *     tags: [Conversaciones]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -157,7 +166,7 @@ router.post('/', createConversacion);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.put('/:id', updateConversacion);
+router.put('/:id', checkToken, updateConversacion);
 
 /**
  * @swagger
@@ -165,6 +174,8 @@ router.put('/:id', updateConversacion);
  *   delete:
  *     summary: Eliminar una conversación
  *     tags: [Conversaciones]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -193,6 +204,6 @@ router.put('/:id', updateConversacion);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.delete('/:id', deleteConversacion);
+router.delete('/:id', checkToken, deleteConversacion);
 
 module.exports = router;

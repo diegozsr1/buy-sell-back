@@ -9,6 +9,7 @@ const {
     updateArticulo,
     deleteArticulo,
 } = require('../../controllers/articulos.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -175,6 +176,8 @@ router.get('/:id', getArticuloById);
  *   post:
  *     summary: Crear un artículo
  *     tags: [Artículos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -204,7 +207,7 @@ router.get('/:id', getArticuloById);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.post('/', createArticulo);
+router.post('/', checkToken, createArticulo);
 
 /**
  * @swagger
@@ -212,6 +215,8 @@ router.post('/', createArticulo);
  *   put:
  *     summary: Actualizar un artículo
  *     tags: [Artículos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -248,7 +253,7 @@ router.post('/', createArticulo);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.put('/:id', updateArticulo);
+router.put('/:id', checkToken, updateArticulo);
 
 /**
  * @swagger
@@ -256,6 +261,8 @@ router.put('/:id', updateArticulo);
  *   delete:
  *     summary: Eliminar un artículo
  *     tags: [Artículos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -286,6 +293,6 @@ router.put('/:id', updateArticulo);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.delete('/:id', deleteArticulo);
+router.delete('/:id', checkToken, deleteArticulo);
 
 module.exports = router;

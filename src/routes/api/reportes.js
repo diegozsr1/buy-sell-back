@@ -6,6 +6,7 @@ const {
     updateReporte,
     deleteReporte,
 } = require('../../controllers/reportes.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -20,6 +21,8 @@ const {
  *   get:
  *     summary: Listar reportes
  *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de reportes
@@ -36,7 +39,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', getReportes);
+router.get('/', checkToken, getReportes);
 
 /**
  * @swagger
@@ -44,6 +47,8 @@ router.get('/', getReportes);
  *   get:
  *     summary: Obtener un reporte por ID
  *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -72,7 +77,7 @@ router.get('/', getReportes);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:id', getReporteById);
+router.get('/:id', checkToken, getReporteById);
 
 /**
  * @swagger
@@ -80,6 +85,8 @@ router.get('/:id', getReporteById);
  *   post:
  *     summary: Crear un reporte
  *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -106,7 +113,7 @@ router.get('/:id', getReporteById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', createReporte);
+router.post('/', checkToken, createReporte);
 
 /**
  * @swagger
@@ -114,6 +121,8 @@ router.post('/', createReporte);
  *   put:
  *     summary: Actualizar un reporte
  *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -154,7 +163,7 @@ router.post('/', createReporte);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', updateReporte);
+router.put('/:id', checkToken, updateReporte);
 
 /**
  * @swagger
@@ -162,6 +171,8 @@ router.put('/:id', updateReporte);
  *   delete:
  *     summary: Eliminar un reporte
  *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -190,6 +201,6 @@ router.put('/:id', updateReporte);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', deleteReporte);
+router.delete('/:id', checkToken, deleteReporte);
 
 module.exports = router;

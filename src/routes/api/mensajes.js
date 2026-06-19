@@ -6,6 +6,7 @@ const {
     updateMensaje,
     deleteMensaje,
 } = require('../../controllers/mensajes.controller');
+const { checkToken } = require('../../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -20,6 +21,8 @@ const {
  *   get:
  *     summary: Listar mensajes
  *     tags: [Mensajes]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de mensajes
@@ -36,7 +39,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', getMensajes);
+router.get('/', checkToken, getMensajes);
 
 /**
  * @swagger
@@ -44,6 +47,8 @@ router.get('/', getMensajes);
  *   get:
  *     summary: Obtener un mensaje por ID
  *     tags: [Mensajes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -72,7 +77,7 @@ router.get('/', getMensajes);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:id', getMensajeById);
+router.get('/:id', checkToken, getMensajeById);
 
 /**
  * @swagger
@@ -80,6 +85,8 @@ router.get('/:id', getMensajeById);
  *   post:
  *     summary: Crear un mensaje
  *     tags: [Mensajes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -106,7 +113,7 @@ router.get('/:id', getMensajeById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', createMensaje);
+router.post('/', checkToken, createMensaje);
 
 /**
  * @swagger
@@ -114,6 +121,8 @@ router.post('/', createMensaje);
  *   put:
  *     summary: Actualizar un mensaje
  *     tags: [Mensajes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -154,7 +163,7 @@ router.post('/', createMensaje);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', updateMensaje);
+router.put('/:id', checkToken, updateMensaje);
 
 /**
  * @swagger
@@ -162,6 +171,8 @@ router.put('/:id', updateMensaje);
  *   delete:
  *     summary: Eliminar un mensaje
  *     tags: [Mensajes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -190,6 +201,6 @@ router.put('/:id', updateMensaje);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', deleteMensaje);
+router.delete('/:id', checkToken, deleteMensaje);
 
 module.exports = router;
