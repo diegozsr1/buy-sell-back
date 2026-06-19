@@ -17,6 +17,11 @@ const options = {
                 description: 'Servidor de desarrollo',
             },
         ],
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
         components: {
             securitySchemes: {
                 bearerAuth: {

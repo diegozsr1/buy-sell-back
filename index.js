@@ -14,6 +14,10 @@ server.listen(PORT);
 // Listeners
 server.on("listening", () => {
     console.log(`Server listening on port ${PORT}`);
+
+    if (process.env.AUTH_BYPASS === 'true' && process.env.NODE_ENV !== 'production') {
+        console.warn('⚠ AUTH_BYPASS activo: las rutas protegidas aceptan peticiones sin token');
+    }
 });
 
 server.on("error", (error) => {
