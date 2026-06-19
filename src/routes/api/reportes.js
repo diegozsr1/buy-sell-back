@@ -77,7 +77,7 @@ router.get('/', checkToken, checkModerator, getReportes);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:id', checkToken, getReporteById);
+router.get('/:id', checkToken, checkModerator, getReporteById);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.get('/:id', checkToken, getReporteById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', checkToken, createReporte);
+router.post('/', checkToken, checkModerator, createReporte);
 
 /**
  * @swagger
@@ -163,7 +163,7 @@ router.post('/', checkToken, createReporte);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', checkToken, updateReporte);
+router.put('/:id', checkToken, checkModerator, updateReporte);
 
 /**
  * @swagger
@@ -201,6 +201,6 @@ router.put('/:id', checkToken, updateReporte);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', checkToken, deleteReporte);
+router.delete('/:id', checkToken, checkModerator, deleteReporte);
 
 module.exports = router;
