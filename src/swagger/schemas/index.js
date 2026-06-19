@@ -10,6 +10,7 @@ const favoritos = require('./favoritos');
 const mensajes = require('./mensajes');
 const pedidos = require('./pedidos');
 const reportes = require('./reportes');
+const estadisticas = require('./estadisticas');
 
 module.exports = {
     ...common,
@@ -24,4 +25,5 @@ module.exports = {
     ...mensajes,
     ...pedidos,
     ...reportes,
+    ...estadisticas,
 };

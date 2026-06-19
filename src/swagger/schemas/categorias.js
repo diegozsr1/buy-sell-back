@@ -11,6 +11,11 @@ module.exports = {
                 example: 'https://res.cloudinary.com/djqduukxt/image/upload/v123/categorias/iconos/abc.png',
                 description: 'URL del icono almacenado en Cloudinary',
             },
+            total_articulos: {
+                type: 'integer',
+                example: 12,
+                description: 'Número de artículos asociados a la categoría',
+            },
         },
     },
     CategoriaRequest: {

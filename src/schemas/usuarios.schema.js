@@ -49,11 +49,16 @@ const usuarioSchema = yup.object({
         .max(100, 'La zona geográfica no puede superar 100 caracteres')
         .optional(),
     cp: yup
-        .number()
-        .integer('El código postal debe ser un número entero')
-        .positive('El código postal debe ser positivo')
+        .string()
+        .trim()
+        .matches(/^\d{5}$/, 'El código postal debe tener 5 dígitos')
+        .nullable()
         .optional()
-        .transform((value, originalValue) => (originalValue === '' || originalValue === null ? undefined : value)),
+        .transform((value, originalValue) =>
+            originalValue === '' || originalValue === null || originalValue === undefined
+                ? null
+                : String(originalValue).trim()
+        ),
     bloqueado: yup
         .number()
         .integer()

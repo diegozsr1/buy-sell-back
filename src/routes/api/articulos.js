@@ -2,6 +2,8 @@ const router = require('express').Router();
 const {
     getArticulos,
     getArticuloById,
+    getArticulosRecientes,
+    getArticulosMasVendidos,
     getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
@@ -39,6 +41,54 @@ const {
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/', getArticulos);
+
+/**
+ * @swagger
+ * /api/articulos/recientes:
+ *   get:
+ *     summary: Artículos subidos recientemente
+ *     description: Devuelve los artículos creados en los últimos 7 días, ordenados del más reciente al más antiguo.
+ *     tags: [Artículos]
+ *     responses:
+ *       200:
+ *         description: Lista de artículos recientes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Articulo'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeErrorResponse'
+ */
+router.get('/recientes', getArticulosRecientes);
+
+/**
+ * @swagger
+ * /api/articulos/mas-vendidos:
+ *   get:
+ *     summary: Artículos más vendidos
+ *     description: Devuelve los 10 artículos con más pedidos completados y la moda de CP ponderada por ventas (provincia derivada del código postal).
+ *     tags: [Artículos]
+ *     responses:
+ *       200:
+ *         description: Ranking de artículos más vendidos con resumen geográfico
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ArticulosMasVendidosResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeErrorResponse'
+ */
+router.get('/mas-vendidos', getArticulosMasVendidos);
 
 /**
  * @swagger
