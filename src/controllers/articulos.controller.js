@@ -57,14 +57,14 @@ const getArticuloById = async (req, res) => {
     try {
         const { id } = req.params;
         const articulo = await ArticuloModel.getById(id);
-
-        if (!articulo) {
+        
+        if (!articulo.articulos[0]) {
             return res.status(404).json({
                 mensaje: 'Artículo no encontrado',
             });
         }
 
-        res.status(200).json(articulo);
+        res.status(200).json(articulo.articulos[0]);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener el artículo',

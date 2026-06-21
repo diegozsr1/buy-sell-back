@@ -8,10 +8,23 @@ const getAll = async () => {
 
 const getById = async (id) => {
     const [rows] = await db.query(
-        'SELECT * FROM articulos WHERE id = ?',
+        `
+        SELECT a.*,u.cp 
+            FROM articulos a
+            LEFT JOIN usuarios u ON u.id=a.usuarios_id
+            WHERE a.id=?
+        `,
         [id]
     );
-    return rows[0];
+
+    const articulos = rows.map((row) => ({
+        ...row,
+        provincia: getProvinciaFromCp(row.cp)
+    }));
+
+    return {
+        articulos
+    };
 };
 
 const getRecientes = async () => {
