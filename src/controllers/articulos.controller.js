@@ -1,4 +1,5 @@
 const ArticuloModel = require('../models/articulos.model.js');
+const UsuarioModel = require('../models/usuarios.model.js');
 const { articuloUsuarioIdSchema } = require('../schemas/articulos.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
@@ -163,7 +164,56 @@ const updateArticulo = async (req, res) => {
             error: error.message,
         });
     }
+};// PUT /articulos/:id
+
+const updateArticuloAndCP = async (req, res) => {
+    
+    try {
+        const { id } = req.params;
+        const articuloExistente = await ArticuloModel.getById(id);
+
+        if (!articuloExistente) {
+            return res.status(404).json({
+                mensaje: 'Artículo no encontrado',
+            });
+        }
+
+        const {
+            usuarios_id,
+            titulo,
+            descripcion,
+            categoria,
+            precio,
+            ubicacion,
+            estado_conservacion_id,
+            estado_articulo_id,
+        } = req.body;
+
+        await ArticuloModel.update(id, {
+            usuarios_id,
+            titulo,
+            descripcion,
+            categorias_id:categoria,
+            precio,
+            estado_conservacion_id,
+            estado_articulo_id,
+        });
+
+        await UsuarioModel.updateCP(usuarios_id,ubicacion);
+
+        res.status(200).json({
+            mensaje: 'Artículo actualizado correctamente',
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al actualizar el artículo',
+            error: error.message,
+        });
+    }
+    
 };
+
+
 
 // DELETE /articulos/:id
 const deleteArticulo = async (req, res) => {
@@ -213,5 +263,6 @@ module.exports = {
     getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
+    updateArticuloAndCP,
     deleteArticulo,
 };

@@ -8,6 +8,7 @@ const {
     createArticulo,
     updateArticulo,
     deleteArticulo,
+    updateArticuloAndCP,
 } = require('../../controllers/articulos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -254,6 +255,9 @@ router.post('/', checkToken, createArticulo);
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.put('/:id', checkToken, updateArticulo);
+
+/* todo: swagger */
+router.put('/:id/cp', checkToken, updateArticuloAndCP);
 
 /**
  * @swagger

@@ -141,6 +141,14 @@ const updateBloqueado = async (id, bloqueado) => {
     return result[0].affectedRows > 0;
 };
 
+const updateCP = async (id,cp) => {
+    const result = await db.query(
+        `UPDATE usuarios SET cp = ? WHERE id = ?`,
+        [cp, id]
+    );
+    return result[0].affectedRows > 0;
+};
+
 const remove = async (id) => {
     const result = await db.query(`DELETE FROM usuarios WHERE id = ?`, [id]);
     return result[0].affectedRows > 0;
@@ -156,5 +164,6 @@ module.exports = {
     update,
     updateRol,
     updateBloqueado,
+    updateCP,
     remove
 };
