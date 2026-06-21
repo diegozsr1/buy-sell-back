@@ -5,6 +5,7 @@ const {
     createArticuloFoto,
     updateArticuloFoto,
     deleteArticuloFoto,
+    getFotosByArticle,
 } = require('../../controllers/articulo_fotos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -39,6 +40,9 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/', getArticuloFotos);
+
+/* todo: swagger */
+router.get('/get-all-by-article/:article_id', getFotosByArticle);
 
 /**
  * @swagger
