@@ -16,7 +16,7 @@ const getAllByUser = async (user_id) => {
             WHERE p.articulos_id = a.id
             LIMIT 1
         ) AS comprador_id,
-        u.nombre,u.apellidos
+        u.nombre as comprador_nombre,u.apellidos as comprador_apellidos
         FROM articulos a
         LEFT JOIN usuarios u 
             ON u.id = (
