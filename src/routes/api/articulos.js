@@ -47,7 +47,7 @@ router.get('/', getArticulos);
 
 /* TODO: swagger */
 /* Muestra los artículos que ha publicado un usuario concreto (en cualquier estado) */
-router.get('/get-all-por-usuario/:user_id',getArticulosPorUsuario);
+router.get('/get-all/usuario/:user_id',getArticulosPorUsuario);
 
 /**
  * @swagger

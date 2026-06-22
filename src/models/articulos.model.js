@@ -8,7 +8,24 @@ const getAll = async () => {
 
 const getAllByUser = async (user_id) => {
     const [rows] = await db.query(`
-        SELECT * FROM articulos where usuarios_id=?
+        SELECT 
+    a.*,
+    (
+        SELECT p.comprador_id
+            FROM pedidos p
+            WHERE p.articulos_id = a.id
+            LIMIT 1
+        ) AS comprador_id,
+        u.nombre,u.apellidos
+        FROM articulos a
+        LEFT JOIN usuarios u 
+            ON u.id = (
+                SELECT p.comprador_id
+                FROM pedidos p
+                WHERE p.articulos_id = a.id
+                LIMIT 1
+        )
+        WHERE a.usuarios_id = ?;
         `,
         [user_id]);
     return rows;
