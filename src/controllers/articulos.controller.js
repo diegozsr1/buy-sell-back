@@ -227,9 +227,8 @@ const updateArticuloAndCP = async (req, res) => {
     
 };
 
+// DELETE /articulos/:id — baja lógica: pasa el artículo a estado Retirado
 
-
-// DELETE /articulos/:id
 const deleteArticulo = async (req, res) => {
     try {
         const { id } = req.params;
@@ -244,11 +243,11 @@ const deleteArticulo = async (req, res) => {
         await ArticuloModel.deleteById(id);
 
         res.status(200).json({
-            mensaje: 'Artículo eliminado correctamente',
+            mensaje: 'Artículo retirado correctamente',
         });
     } catch (error) {
         res.status(500).json({
-            mensaje: 'Error al eliminar el artículo',
+            mensaje: 'Error al retirar el artículo',
             error: error.message,
         });
     }
