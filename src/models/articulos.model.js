@@ -9,14 +9,14 @@ const getAll = async () => {
 const getAllByUser = async (user_id) => {
     const [rows] = await db.query(`
         SELECT 
-    a.*,
-    (
-        SELECT p.comprador_id
-            FROM pedidos p
-            WHERE p.articulos_id = a.id
-            LIMIT 1
-        ) AS comprador_id,
-        u.nombre as comprador_nombre,u.apellidos as comprador_apellidos
+            a.*,
+            (
+                SELECT p.comprador_id
+                FROM pedidos p
+                WHERE p.articulos_id = a.id
+                LIMIT 1
+            ) AS comprador_id,
+            u.nombre,u.apellidos,f.url_foto
         FROM articulos a
         LEFT JOIN usuarios u 
             ON u.id = (
@@ -24,7 +24,8 @@ const getAllByUser = async (user_id) => {
                 FROM pedidos p
                 WHERE p.articulos_id = a.id
                 LIMIT 1
-        )
+            )
+        LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
         WHERE a.usuarios_id = ?;
         `,
         [user_id]);
