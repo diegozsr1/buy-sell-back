@@ -11,15 +11,21 @@ const getAllByUser = async (user_id) => {
             a.*,
             (SELECT COUNT(*) 
             FROM favoritos 
-            WHERE usuarios_id = ?) AS total,u.nombre as nombre_vendedor,u.apellidos as apellidos_vendedor,v.cantidad as cantidad_valoraciones,v.valoracion as puntuacion 
+            WHERE usuarios_id = ?) AS total,
+            u.nombre as nombre_vendedor,
+            u.apellidos as apellidos_vendedor,
+            v.cantidad as cantidad_valoraciones,
+            v.valoracion as puntuacion,
+            fo.url_foto
         FROM favoritos f 
         LEFT JOIN articulos a ON a.id = f.articulos_id 
-        LEFT JOIN (SELECT a.usuarios_id,count(a.usuarios_id)as cantidad,avg(v.puntuacion) as valoracion
+        LEFT JOIN (SELECT a.usuarios_id,count(a.usuarios_id)as cantidad,avg(v.puntuacion) as valoracion 
 			FROM valoraciones v 
 			LEFT JOIN articulos a ON a.id=v.articulos_id 
-			GROUP BY a.usuarios_id
-            ) v ON a.usuarios_id=v.usuarios_id
+			GROUP BY a.usuarios_id 
+            ) v ON a.usuarios_id=v.usuarios_id 
         LEFT JOIN usuarios u ON u.id=a.usuarios_id 
+        LEFT JOIN articulo_fotos fo ON (a.id=fo.articulos_id AND fo.principal=1)
         WHERE f.usuarios_id = ? 
         `,[user_id,user_id]);
     return rows;
