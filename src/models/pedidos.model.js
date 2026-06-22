@@ -15,6 +15,18 @@ const getById = async (id) => {
     return rows[0];
 };
 
+const getByCompradorId = async (usuarioId) => {
+    const [rows] = await db.query(
+        `SELECT p.*, a.titulo AS nombre_articulo
+         FROM pedidos p
+         INNER JOIN articulos a ON a.id = p.articulos_id
+         WHERE p.comprador_id = ?
+         ORDER BY p.fecha_pedido DESC`,
+        [usuarioId]
+    );
+    return rows;
+};
+
 const create = async (data) => {
     const { comprador_id, articulos_id, estado, direccion_envio } = data;
 
@@ -74,6 +86,7 @@ const getVentasByUsuarioId = async (usuarioId) => {
 module.exports = {
     getAll,
     getById,
+    getByCompradorId,
     create,
     update,
     deleteById,

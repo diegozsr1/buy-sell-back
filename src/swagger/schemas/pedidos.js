@@ -41,4 +41,19 @@ module.exports = {
             },
         },
     },
+    PedidoUsuario: {
+        allOf: [
+            { $ref: '#/components/schemas/Pedido' },
+            {
+                type: 'object',
+                properties: {
+                    nombre_articulo: {
+                        type: 'string',
+                        example: 'Bicicleta de montaña',
+                        description: 'Título del artículo asociado al pedido',
+                    },
+                },
+            },
+        ],
+    },
 };
