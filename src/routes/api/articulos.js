@@ -259,7 +259,8 @@ router.put('/:id', checkToken, updateArticulo);
  * @swagger
  * /api/articulos/{id}:
  *   delete:
- *     summary: Eliminar un artículo
+ *     summary: Retirar un artículo
+ *     description: Baja lógica del artículo. Actualiza estado_articulo_id a Retirado sin borrar el registro.
  *     tags: [Artículos]
  *     security:
  *       - bearerAuth: []
@@ -273,13 +274,13 @@ router.put('/:id', checkToken, updateArticulo);
  *         example: 1
  *     responses:
  *       200:
- *         description: Artículo eliminado
+ *         description: Artículo retirado
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/MensajeResponse'
  *             example:
- *               mensaje: Artículo eliminado correctamente
+ *               mensaje: Artículo retirado correctamente
  *       404:
  *         description: Artículo no encontrado
  *         content:

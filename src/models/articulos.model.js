@@ -127,7 +127,9 @@ const update = async (id, data) => {
 
 const deleteById = async (id) => {
     const [result] = await db.query(
-        'DELETE FROM articulos WHERE id = ?',
+        `UPDATE articulos
+         SET estado_articulo_id = 'Retirado', updated_at = NOW()
+         WHERE id = ?`,
         [id]
     );
 
