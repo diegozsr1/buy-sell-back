@@ -26,7 +26,7 @@ const getAllByUser = async (user_id) => {
             ) v ON a.usuarios_id=v.usuarios_id 
         LEFT JOIN usuarios u ON u.id=a.usuarios_id 
         LEFT JOIN articulo_fotos fo ON (a.id=fo.articulos_id AND fo.principal=1)
-        WHERE f.usuarios_id = ? 
+        WHERE f.usuarios_id = ? AND a.estado_articulo_id != 'Retirado' 
         `,[user_id,user_id]);
     return rows;
 };
