@@ -41,7 +41,8 @@ const { checkToken } = require('../../middleware/auth.middleware');
  */
 router.get('/', getArticuloFotos);
 
-/* todo: swagger */
+/* TODO: swagger */
+/* Devuelve todas las fotos para un artículo determinado (la que había hecha devuelve todas las fotos de todos los artículos) */
 router.get('/get-all-by-article/:article_id', getFotosByArticle);
 
 /**

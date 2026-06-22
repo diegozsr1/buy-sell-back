@@ -6,6 +6,14 @@ const getAll = async () => {
     return rows;
 };
 
+const getAllByUser = async (user_id) => {
+    const [rows] = await db.query(`
+        SELECT * FROM articulos where usuarios_id=?
+        `,
+        [user_id]);
+    return rows;
+};
+
 const getById = async (id) => {
     const [rows] = await db.query(
         `
@@ -163,6 +171,7 @@ const countPublicadosByUsuarioId = async (usuarioId) => {
 
 module.exports = {
     getAll,
+    getAllByUser,
     getById,
     getRecientes,
     getMasVendidos,

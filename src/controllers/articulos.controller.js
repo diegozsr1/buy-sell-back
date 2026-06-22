@@ -27,6 +27,20 @@ const getArticulos = async (req, res) => {
     }
 };
 
+// GET /articulos by user
+const getArticulosPorUsuario = async (req, res) => {
+    const { user_id } = req.params;
+    try {
+        const rows = await ArticuloModel.getAllByUser(user_id);
+        res.status(200).json(rows);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener los artículos',
+            error: error.message,
+        });
+    }
+};
+
 // GET /articulos/recientes
 const getArticulosRecientes = async (req, res) => {
     try {
@@ -257,6 +271,7 @@ const getArticulosPublicadosByUsuario = async (req, res) => {
 
 module.exports = {
     getArticulos,
+    getArticulosPorUsuario,
     getArticulosRecientes,
     getArticulosMasVendidos,
     getArticuloById,
