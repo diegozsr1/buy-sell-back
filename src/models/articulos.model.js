@@ -16,7 +16,9 @@ const getAllByUser = async (user_id) => {
                 WHERE p.articulos_id = a.id
                 LIMIT 1
             ) AS comprador_id,
-            u.nombre,u.apellidos,f.url_foto
+            u.nombre AS comprador_nombre,
+            u.apellidos AS comprador_apellidos,
+            f.url_foto
         FROM articulos a
         LEFT JOIN usuarios u 
             ON u.id = (
@@ -166,9 +168,7 @@ const update = async (id, data) => {
 
 const deleteById = async (id) => {
     const [result] = await db.query(
-        `UPDATE articulos
-         SET estado_articulo_id = 'Retirado', updated_at = NOW()
-         WHERE id = ?`,
+        'DELETE FROM articulos WHERE id = ?',
         [id]
     );
 
