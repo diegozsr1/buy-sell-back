@@ -13,6 +13,14 @@ const getById = async (id) => {
     return rows[0];
 };
 
+const getByArticuloId = async (articuloId) => {
+    const [rows] = await db.query(
+        'SELECT * FROM articulo_fotos WHERE articulos_id = ?',
+        [articuloId]
+    );
+    return rows;
+};
+
 const create = async (data) => {
     const { url_foto, principal, articulos_id } = data;
 
@@ -51,6 +59,7 @@ const deleteById = async (id) => {
 module.exports = {
     getAll,
     getById,
+    getByArticuloId,
     create,
     update,
     deleteById,

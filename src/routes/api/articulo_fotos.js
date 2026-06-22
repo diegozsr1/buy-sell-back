@@ -5,6 +5,7 @@ const {
     createArticuloFoto,
     updateArticuloFoto,
     deleteArticuloFoto,
+    getFotosByArticuloId,
 } = require('../../controllers/articulo_fotos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -39,6 +40,40 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/', getArticuloFotos);
+
+/**
+ * @swagger
+ * /api/articulo_fotos/articulo/{articuloId}:
+ *   get:
+ *     summary: Obtener fotos por artículo
+ *     description: Devuelve todas las fotos asociadas a un artículo concreto.
+ *     tags: [Artículo fotos]
+ *     parameters:
+ *       - in: path
+ *         name: articuloId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del artículo
+ *         example: 12
+ *     responses:
+ *       200:
+ *         description: Lista de fotos del artículo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ArticuloFoto'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/articulo/:articuloId', getFotosByArticuloId);
 
 /**
  * @swagger

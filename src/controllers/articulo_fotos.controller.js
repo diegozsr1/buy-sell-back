@@ -26,6 +26,16 @@ const getArticuloFotoById = async (req, res) => {
     }
 };
 
+const getFotosByArticuloId = async (req, res) => {
+    try {
+        const { articuloId } = req.params;
+        const fotos = await ArticuloFotoModel.getByArticuloId(articuloId);
+        res.json(fotos);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const createArticuloFoto = async (req, res) => {
     try {
         const { url_foto, principal, articulos_id } = req.body;
@@ -82,4 +92,5 @@ module.exports = {
     createArticuloFoto,
     updateArticuloFoto,
     deleteArticuloFoto,
+    getFotosByArticuloId,
 };
