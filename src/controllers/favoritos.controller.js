@@ -16,7 +16,6 @@ const getFavoritos = async (req, res) => {
 const getFavoritosByUser = async (req, res) => {
     try {
         const { user_id } = req.params;
-        console.log(user_id);
         const rows = await FavoritoModel.getAllByUser(user_id);
         res.status(200).json(rows);
     } catch (error) {
