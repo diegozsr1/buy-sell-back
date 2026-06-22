@@ -5,6 +5,7 @@ const {
     createFavorito,
     updateFavorito,
     deleteFavorito,
+    getFavoritosByUser,
 } = require('../../controllers/favoritos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -40,6 +41,10 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/', checkToken, getFavoritos);
+
+/* TODO: swagger */
+/* Devuelve todos los artículos favoritos de un usuario concreto */
+router.get('/get-all/usuario/:user_id', checkToken, getFavoritosByUser);
 
 /**
  * @swagger

@@ -5,6 +5,20 @@ const getAll = async () => {
     return rows;
 };
 
+const getAllByUser = async (user_id) => {
+    const [rows] = await db.query(`
+        SELECT 
+            a.*,
+            (SELECT COUNT(*) 
+            FROM favoritos 
+            WHERE usuarios_id = ?) AS total 
+        FROM favoritos f 
+        JOIN articulos a ON a.id = f.articulos_id 
+        WHERE f.usuarios_id = ? 
+        `,[user_id,user_id]);
+    return rows;
+};
+
 const getById = async (id) => {
     const [rows] = await db.query(
         'SELECT * FROM favoritos WHERE id = ?',
@@ -51,6 +65,7 @@ const deleteById = async (id) => {
 
 module.exports = {
     getAll,
+    getAllByUser,
     getById,
     create,
     update,
