@@ -180,6 +180,15 @@ const deleteById = async (id) => {
     return result.affectedRows > 0;
 };
 
+const logicalDeletionById= async (id) => {
+    const [result] = await db.query(
+        `UPDATE articulos SET estado_articulo_id='Retirado' WHERE id = ?`,
+        [id]
+    );
+
+    return result.affectedRows > 0;
+};
+
 const countPublicadosByUsuarioId = async (usuarioId) => {
     const [rows] = await db.query(
         `SELECT COUNT(*) AS total
@@ -203,5 +212,6 @@ module.exports = {
     create,
     update,
     deleteById,
+    logicalDeletionById,
     countPublicadosByUsuarioId,
 };

@@ -178,7 +178,7 @@ const updateArticulo = async (req, res) => {
             error: error.message,
         });
     }
-};// PUT /articulos/:id
+};
 
 const updateArticuloAndCP = async (req, res) => {
     
@@ -226,6 +226,35 @@ const updateArticuloAndCP = async (req, res) => {
     }
     
 };
+
+
+// UPDATE /articulos/borrado-logico/:id — pasa el artículo a estado Retirado
+const updateLogicalDeletion = async (req, res) => {
+    
+    try {
+        const { id } = req.params;
+        const articuloExistente = await ArticuloModel.getById(id);
+
+        if (!articuloExistente) {
+            return res.status(404).json({
+                mensaje: 'Artículo no encontrado',
+            });
+        }
+
+        await ArticuloModel.logicalDeletionById(id);
+
+        res.status(200).json({
+            mensaje: 'Artículo retirado correctamente',
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al retirar el artículo',
+            error: error.message,
+        });
+    }
+    
+};
+
 
 // DELETE /articulos/:id — baja lógica: pasa el artículo a estado Retirado
 
@@ -279,4 +308,5 @@ module.exports = {
     updateArticulo,
     updateArticuloAndCP,
     deleteArticulo,
+    updateLogicalDeletion
 };

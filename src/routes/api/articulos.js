@@ -10,6 +10,7 @@ const {
     deleteArticulo,
     updateArticuloAndCP,
     getArticulosPorUsuario,
+    updateLogicalDeletion,
 } = require('../../controllers/articulos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -264,6 +265,10 @@ router.put('/:id', checkToken, updateArticulo);
 /* todo: swagger */
 /* Actualiza un artículo y también el código postal del usuario que lo ha publicado */
 router.put('/:id/cp', checkToken, updateArticuloAndCP);
+
+/* TODO: swagger */
+/* Borrado lógico de un artículo */
+router.put('/borrado-logico/:id',updateLogicalDeletion);
 
 /**
  * @swagger
