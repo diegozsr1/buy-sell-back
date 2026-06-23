@@ -66,15 +66,19 @@ const getRecientes = async () => {
 
 const getMasVendidos = async (limite = 10) => {
     const [rows] = await db.query(
-        `SELECT a.*,
+        `
+        SELECT a.*,
                 COUNT(p.id) AS total_ventas,
-                MAX(u.cp) AS cp
-         FROM articulos a
-         INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado'
-         INNER JOIN usuarios u ON u.id = a.usuarios_id
-         GROUP BY a.id
-         ORDER BY total_ventas DESC
-         LIMIT ?`,
+                MAX(u.cp) AS cp, 
+                MAX(f.url_foto)
+         FROM articulos a 
+         LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
+         INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado' 
+         INNER JOIN usuarios u ON u.id = a.usuarios_id 
+         GROUP BY a.id 
+         ORDER BY total_ventas DESC 
+         LIMIT ?
+        `,
         [limite]
     );
 
