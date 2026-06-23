@@ -57,9 +57,10 @@ const getById = async (id) => {
 
 const getRecientes = async () => {
     const [rows] = await db.query(
-        `SELECT * FROM articulos
-         WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-         ORDER BY created_at DESC`
+        `SELECT a.*,f.url_foto FROM articulos a 
+        LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1) 
+         WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
+         ORDER BY a.created_at DESC`
     );
     return rows;
 };
@@ -70,7 +71,7 @@ const getMasVendidos = async (limite = 10) => {
         SELECT a.*,
                 COUNT(p.id) AS total_ventas,
                 MAX(u.cp) AS cp, 
-                MAX(f.url_foto)
+                MAX(f.url_foto) AS url_foto 
          FROM articulos a 
          LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
          INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado' 
