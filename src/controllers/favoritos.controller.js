@@ -16,8 +16,9 @@ const getFavoritos = async (req, res) => {
 const getFavoritosByUser = async (req, res) => {
     try {
         const { user_id } = req.params;
-        const rows = await FavoritoModel.getAllByUser(user_id);
-        res.status(200).json(rows);
+        const {articulos} = await FavoritoModel.getAllByUser(user_id);
+        console.log(articulos);
+        res.status(200).json(articulos);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener los favoritos',

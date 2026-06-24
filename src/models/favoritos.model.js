@@ -1,4 +1,5 @@
 const db = require('../config/db.js');
+const { getProvinciaFromCp } = require('../utils/codigoPostal.utils.js');
 
 const getAll = async () => {
     const [rows] = await db.query('SELECT * FROM favoritos');
@@ -14,6 +15,7 @@ const getAllByUser = async (user_id) => {
             WHERE usuarios_id = ?) AS total,
             u.nombre as nombre_vendedor,
             u.apellidos as apellidos_vendedor,
+            u.cp,
             v.cantidad as cantidad_valoraciones,
             v.valoracion as puntuacion,
             fo.url_foto
@@ -28,7 +30,15 @@ const getAllByUser = async (user_id) => {
         LEFT JOIN articulo_fotos fo ON (a.id=fo.articulos_id AND fo.principal=1)
         WHERE f.usuarios_id = ? AND a.estado_articulo_id != 'Retirado' 
         `,[user_id,user_id]);
-    return rows;
+
+    const articulos = rows.map((row) => ({
+            ...row,
+            provincia: getProvinciaFromCp(row.cp),
+        }));
+    
+        return {
+            articulos,
+        };
 };
 
 const getById = async (id) => {
