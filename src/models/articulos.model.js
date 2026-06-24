@@ -1,5 +1,6 @@
 const db = require('../config/db.js');
 const { getProvinciaFromCp, calcularZonaModa } = require('../utils/codigoPostal.utils.js');
+const ArticuloFotoModel = require('./articulo_fotos.model.js');
 
 const getAll = async () => {
     const [rows] = await db.query('SELECT * FROM articulos');
@@ -45,9 +46,16 @@ const getById = async (id) => {
         [id]
     );
 
+    if (!rows.length) {
+        return { articulos: [] };
+    }
+
+    const fotos = await ArticuloFotoModel.getAllFhotosByArticle(id);
+
     const articulos = rows.map((row) => ({
         ...row,
-        provincia: getProvinciaFromCp(row.cp)
+        provincia: getProvinciaFromCp(row.cp),
+        fotos,
     }));
 
     return {
