@@ -2,6 +2,7 @@ const router = require('express').Router();
 const {
     getPromedioRecibidasByUsuario,
     getValoraciones,
+    getValoracionesByUser,
     getValoracionById,
     createValoracion,
     updateValoracion,
@@ -97,6 +98,10 @@ router.get('/usuario/:usuarioId/promedio', getPromedioRecibidasByUsuario);
  *               error: Ha habido un error al consultar los datos
  */
 router.get('/', getValoraciones);
+
+/*TODO: swagger */
+/*Obtiene todas las valoraciones por un usuario concreto */
+router.get('/usuario/get-all/:user_id', getValoracionesByUser);
 
 /**
  * @swagger

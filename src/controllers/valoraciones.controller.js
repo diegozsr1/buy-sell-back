@@ -38,6 +38,21 @@ const getValoraciones = async (req, res) => {
     }
 };
 
+const getValoracionesByUser = async (req, res) => {
+    
+    try {
+        const { user_id } = req.params;
+        if(user_id){
+            const resultado = await ValoracionModel.getValoracionesByUser(user_id);
+            res.json(resultado);
+        }
+        
+    } catch (error) {
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+    
+};
+
 const getValoracionById = async (req, res) => {
     try {
         const { id } = await valoracionIdSchema.validate(req.params, validationOptions);
@@ -109,6 +124,7 @@ const deleteValoracion = async (req, res) => {
 module.exports = {
     getPromedioRecibidasByUsuario,
     getValoraciones,
+    getValoracionesByUser,
     getValoracionById,
     createValoracion,
     updateValoracion,

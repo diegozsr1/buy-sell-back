@@ -33,6 +33,23 @@ const getAll = async () => {
     return rows.map(mapValoracion);
 };
 
+const getValoracionesByUser = async (user_id) => {
+    const [rows] = await db.query(`
+        SELECT 	v.*,
+            a.usuarios_id,
+            u.nombre, 
+            u.apellidos,
+            DATEDIFF(CURDATE(), v.creada_en) AS dias_transcurridos
+        FROM valoraciones v
+        LEFT JOIN articulos a ON a.id=v.articulos_id
+        LEFT JOIN usuarios u ON u.id=v.usuario_valorador_id
+        WHERE a.usuarios_id=6
+        `,[
+            user_id
+        ]);
+    return rows.map(mapValoracion);
+};
+
 const getById = async (id) => {
     const [rows] = await db.query(
         'SELECT * FROM valoraciones WHERE id = ?',
@@ -83,6 +100,7 @@ const deleteById = async (id) => {
 module.exports = {
     getPromedioRecibidasByUsuarioId,
     getAll,
+    getValoracionesByUser,
     getById,
     create,
     update,
