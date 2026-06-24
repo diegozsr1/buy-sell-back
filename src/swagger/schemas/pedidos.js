@@ -52,6 +52,26 @@ module.exports = {
                         example: 'Bicicleta de montaña',
                         description: 'Título del artículo asociado al pedido',
                     },
+                    fotos: {
+                        type: 'array',
+                        description: 'Imágenes del artículo asociado al pedido',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                id: { type: 'integer', example: 1 },
+                                url_foto: {
+                                    type: 'string',
+                                    example: 'https://ejemplo.com/fotos/articulo-1.jpg',
+                                },
+                                principal: {
+                                    type: 'integer',
+                                    enum: [0, 1],
+                                    example: 1,
+                                },
+                                articulos_id: { type: 'integer', example: 12 },
+                            },
+                        },
+                    },
                 },
             },
         ],
