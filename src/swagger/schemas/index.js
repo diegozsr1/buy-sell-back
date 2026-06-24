@@ -7,6 +7,7 @@ const articulos = require('./articulos');
 const categorias = require('./categorias');
 const conversaciones = require('./conversaciones');
 const favoritos = require('./favoritos');
+const usuariosFavoritos = require('./usuarios_favoritos');
 const mensajes = require('./mensajes');
 const pedidos = require('./pedidos');
 const reportes = require('./reportes');
@@ -22,6 +23,7 @@ module.exports = {
     ...categorias,
     ...conversaciones,
     ...favoritos,
+    ...usuariosFavoritos,
     ...mensajes,
     ...pedidos,
     ...reportes,
