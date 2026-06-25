@@ -15,6 +15,20 @@ const getById = async (id) => {
     return rows[0];
 };
 
+const getAllDataById = async (id) => {
+    const [rows] = await db.query(
+        `
+        SELECT p.*,a.titulo,u.nombre,u.apellidos 
+            FROM pedidos p 
+            LEFT JOIN articulos a ON a.id=p.articulos_id 
+            LEFT JOIN usuarios u ON u.id=a.usuarios_id 
+            WHERE p.id=?
+        `,
+        [id]
+    );
+    return rows[0];
+};
+
 const create = async (data) => {
     const { comprador_id, articulos_id, estado, direccion_envio } = data;
 
@@ -74,6 +88,7 @@ const getVentasByUsuarioId = async (usuarioId) => {
 module.exports = {
     getAll,
     getById,
+    getAllDataById,
     create,
     update,
     deleteById,
