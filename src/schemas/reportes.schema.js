@@ -43,6 +43,16 @@ const reporteSchema = yup.object({
         .string()
         .oneOf(ESTADOS_REPORTE, `El estado debe ser uno de: ${ESTADOS_REPORTE.join(', ')}`)
         .required('El estado es obligatorio'),
+    resultado_reporte: yup
+        .string()
+        .trim()
+        .nullable()
+        .optional()
+        .transform((value, originalValue) =>
+            originalValue === '' || originalValue === null || originalValue === undefined
+                ? null
+                : value
+        ),
 }).noUnknown(true, 'Campo no permitido');
 
 module.exports = {

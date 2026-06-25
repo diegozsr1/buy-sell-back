@@ -24,12 +24,13 @@ const create = async (data) => {
         motivo,
         descripcion,
         estado,
+        resultado_reporte,
     } = data;
 
     const [result] = await db.query(
         `INSERT INTO reportes
-        (usuario_reportado_id, usuario_reportante_id, articulos_id, moderador_id, motivo, descripcion, estado)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        (usuario_reportado_id, usuario_reportante_id, articulos_id, moderador_id, motivo, descripcion, estado, resultado_reporte)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             usuario_reportado_id ?? null,
             usuario_reportante_id,
@@ -38,6 +39,7 @@ const create = async (data) => {
             motivo,
             descripcion,
             estado,
+            resultado_reporte ?? null,
         ]
     );
 
@@ -53,6 +55,7 @@ const update = async (id, data) => {
         motivo,
         descripcion,
         estado,
+        resultado_reporte,
     } = data;
 
     const [result] = await db.query(
@@ -64,6 +67,7 @@ const update = async (id, data) => {
              motivo = ?,
              descripcion = ?,
              estado = ?,
+             resultado_reporte = ?,
              updated_at = NOW()
          WHERE id = ?`,
         [
@@ -74,6 +78,7 @@ const update = async (id, data) => {
             motivo,
             descripcion,
             estado,
+            resultado_reporte ?? null,
             id,
         ]
     );

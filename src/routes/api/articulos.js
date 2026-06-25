@@ -8,6 +8,8 @@ const {
     createArticulo,
     updateArticulo,
     deleteArticulo,
+    updateArticuloAndCP,
+    getArticulosPorUsuario
 } = require('../../controllers/articulos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -42,6 +44,10 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/', getArticulos);
+
+/* TODO: swagger */
+/* Muestra los artículos que ha publicado un usuario concreto (en cualquier estado) */
+router.get('/get-all/usuario/:user_id',getArticulosPorUsuario);
 
 /**
  * @swagger
@@ -254,6 +260,10 @@ router.post('/', checkToken, createArticulo);
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.put('/:id', checkToken, updateArticulo);
+
+/* todo: swagger */
+/* Actualiza un artículo y también el código postal del usuario que lo ha publicado */
+router.put('/:id/cp', checkToken, updateArticuloAndCP);
 
 /**
  * @swagger

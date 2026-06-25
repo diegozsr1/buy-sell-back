@@ -5,7 +5,7 @@ const {
     createArticuloFoto,
     updateArticuloFoto,
     deleteArticuloFoto,
-    getFotosByArticuloId,
+    getFotosByArticle,
 } = require('../../controllers/articulo_fotos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -40,6 +40,10 @@ const { checkToken } = require('../../middleware/auth.middleware');
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/', getArticuloFotos);
+
+/* TODO: swagger */
+/* Devuelve todas las fotos para un artículo determinado (la que había hecha devuelve todas las fotos de todos los artículos) */
+router.get('/get-all-by-article/:article_id', getFotosByArticle);
 
 /**
  * @swagger

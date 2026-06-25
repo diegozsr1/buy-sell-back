@@ -6,34 +6,80 @@ const getAll = async () => {
     return rows;
 };
 
+const getAllByUser = async (user_id) => {
+    const [rows] = await db.query(`
+        SELECT 
+            a.*,
+            (
+                SELECT p.comprador_id
+                FROM pedidos p
+                WHERE p.articulos_id = a.id
+                LIMIT 1
+            ) AS comprador_id,
+            u.nombre AS comprador_nombre,
+            u.apellidos AS comprador_apellidos,
+            f.url_foto
+        FROM articulos a
+        LEFT JOIN usuarios u 
+            ON u.id = (
+                SELECT p.comprador_id
+                FROM pedidos p
+                WHERE p.articulos_id = a.id
+                LIMIT 1
+            )
+        LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
+        WHERE a.usuarios_id = ? AND a.estado_articulo_id != 'Retirado';
+        `,
+        [user_id]);
+    return rows;
+};
+
 const getById = async (id) => {
     const [rows] = await db.query(
-        'SELECT * FROM articulos WHERE id = ?',
+        `
+        SELECT a.*,u.cp 
+            FROM articulos a
+            LEFT JOIN usuarios u ON u.id=a.usuarios_id
+            WHERE a.id=?
+        `,
         [id]
     );
-    return rows[0];
+
+    const articulos = rows.map((row) => ({
+        ...row,
+        provincia: getProvinciaFromCp(row.cp)
+    }));
+
+    return {
+        articulos
+    };
 };
 
 const getRecientes = async () => {
     const [rows] = await db.query(
-        `SELECT * FROM articulos
-         WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-         ORDER BY created_at DESC`
+        `SELECT a.*,f.url_foto FROM articulos a 
+        LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1) 
+         WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
+         ORDER BY a.created_at DESC`
     );
     return rows;
 };
 
 const getMasVendidos = async (limite = 10) => {
     const [rows] = await db.query(
-        `SELECT a.*,
+        `
+        SELECT a.*,
                 COUNT(p.id) AS total_ventas,
-                MAX(u.cp) AS cp
-         FROM articulos a
-         INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado'
-         INNER JOIN usuarios u ON u.id = a.usuarios_id
-         GROUP BY a.id
-         ORDER BY total_ventas DESC
-         LIMIT ?`,
+                MAX(u.cp) AS cp, 
+                MAX(f.url_foto) AS url_foto 
+         FROM articulos a 
+         LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
+         INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado' 
+         INNER JOIN usuarios u ON u.id = a.usuarios_id 
+         GROUP BY a.id 
+         ORDER BY total_ventas DESC 
+         LIMIT ?
+        `,
         [limite]
     );
 
@@ -127,9 +173,7 @@ const update = async (id, data) => {
 
 const deleteById = async (id) => {
     const [result] = await db.query(
-        `UPDATE articulos
-         SET estado_articulo_id = 'Retirado', updated_at = NOW()
-         WHERE id = ?`,
+        `UPDATE articulos SET estado_articulo_id='Retirado', updated_at=NOW() WHERE id = ? `,
         [id]
     );
 
@@ -152,6 +196,7 @@ const countPublicadosByUsuarioId = async (usuarioId) => {
 
 module.exports = {
     getAll,
+    getAllByUser,
     getById,
     getRecientes,
     getMasVendidos,

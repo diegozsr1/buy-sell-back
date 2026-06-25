@@ -89,4 +89,34 @@ module.exports = {
             },
         },
     },
+    ValoracionPorUsuario: {
+        allOf: [
+            { $ref: '#/components/schemas/Valoracion' },
+            {
+                type: 'object',
+                properties: {
+                    usuarios_id: {
+                        type: 'integer',
+                        example: 6,
+                        description: 'ID del usuario dueño del artículo valorado',
+                    },
+                    nombre: {
+                        type: 'string',
+                        example: 'Lucía',
+                        description: 'Nombre del usuario que dejó la valoración',
+                    },
+                    apellidos: {
+                        type: 'string',
+                        example: 'Ramírez',
+                        description: 'Apellidos del usuario que dejó la valoración',
+                    },
+                    dias_transcurridos: {
+                        type: 'integer',
+                        example: 3,
+                        description: 'Días transcurridos desde la creación de la valoración',
+                    },
+                },
+            },
+        ],
+    },
 };

@@ -1,4 +1,5 @@
 const ArticuloModel = require('../models/articulos.model.js');
+const UsuarioModel = require('../models/usuarios.model.js');
 const { articuloUsuarioIdSchema } = require('../schemas/articulos.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
@@ -17,6 +18,20 @@ const handleValidationError = (error, res) => {
 const getArticulos = async (req, res) => {
     try {
         const rows = await ArticuloModel.getAll();
+        res.status(200).json(rows);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener los artículos',
+            error: error.message,
+        });
+    }
+};
+
+// GET /articulos by user
+const getArticulosPorUsuario = async (req, res) => {
+    const { user_id } = req.params;
+    try {
+        const rows = await ArticuloModel.getAllByUser(user_id);
         res.status(200).json(rows);
     } catch (error) {
         res.status(500).json({
@@ -57,14 +72,14 @@ const getArticuloById = async (req, res) => {
     try {
         const { id } = req.params;
         const articulo = await ArticuloModel.getById(id);
-
-        if (!articulo) {
+        
+        if (!articulo.articulos[0]) {
             return res.status(404).json({
                 mensaje: 'Artículo no encontrado',
             });
         }
 
-        res.status(200).json(articulo);
+        res.status(200).json(articulo.articulos[0]);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener el artículo',
@@ -165,7 +180,55 @@ const updateArticulo = async (req, res) => {
     }
 };
 
+const updateArticuloAndCP = async (req, res) => {
+    
+    try {
+        const { id } = req.params;
+        const articuloExistente = await ArticuloModel.getById(id);
+
+        if (!articuloExistente) {
+            return res.status(404).json({
+                mensaje: 'Artículo no encontrado',
+            });
+        }
+
+        const {
+            usuarios_id,
+            titulo,
+            descripcion,
+            categoria,
+            precio,
+            ubicacion,
+            estado_conservacion_id,
+            estado_articulo_id,
+        } = req.body;
+
+        await ArticuloModel.update(id, {
+            usuarios_id,
+            titulo,
+            descripcion,
+            categorias_id:categoria,
+            precio,
+            estado_conservacion_id,
+            estado_articulo_id,
+        });
+
+        await UsuarioModel.updateCP(usuarios_id,ubicacion);
+
+        res.status(200).json({
+            mensaje: 'Artículo actualizado correctamente',
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al actualizar el artículo',
+            error: error.message,
+        });
+    }
+    
+};
+
 // DELETE /articulos/:id — baja lógica: pasa el artículo a estado Retirado
+
 const deleteArticulo = async (req, res) => {
     try {
         const { id } = req.params;
@@ -207,11 +270,13 @@ const getArticulosPublicadosByUsuario = async (req, res) => {
 
 module.exports = {
     getArticulos,
+    getArticulosPorUsuario,
     getArticulosRecientes,
     getArticulosMasVendidos,
     getArticuloById,
     getArticulosPublicadosByUsuario,
     createArticulo,
     updateArticulo,
-    deleteArticulo,
+    updateArticuloAndCP,
+    deleteArticulo
 };

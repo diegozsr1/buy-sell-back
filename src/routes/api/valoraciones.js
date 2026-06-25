@@ -2,6 +2,7 @@ const router = require('express').Router();
 const {
     getPromedioRecibidasByUsuario,
     getValoraciones,
+    getValoracionesByUser,
     getValoracionById,
     createValoracion,
     updateValoracion,
@@ -97,6 +98,59 @@ router.get('/usuario/:usuarioId/promedio', getPromedioRecibidasByUsuario);
  *               error: Ha habido un error al consultar los datos
  */
 router.get('/', getValoraciones);
+
+/**
+ * @swagger
+ * /api/valoraciones/usuario/get-all/{user_id}:
+ *   get:
+ *     summary: Listar valoraciones recibidas por un usuario
+ *     description: Devuelve todas las valoraciones realizadas sobre los artículos publicados por el usuario indicado, incluyendo datos del valorador y los días transcurridos desde la valoración.
+ *     tags: [Valoraciones]
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario dueño de los artículos valorados
+ *         example: 6
+ *     responses:
+ *       200:
+ *         description: Lista de valoraciones recibidas por el usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ValoracionPorUsuario'
+ *             examples:
+ *               conValoraciones:
+ *                 summary: Usuario con valoraciones recibidas
+ *                 value:
+ *                   - id: 1
+ *                     usuario_valorador_id: 3
+ *                     articulos_id: 12
+ *                     puntuacion: 4.5
+ *                     mensaje: Muy buen estado y trato excelente.
+ *                     creada_en: '2026-06-15T10:30:00.000Z'
+ *                     usuarios_id: 6
+ *                     nombre: Lucía
+ *                     apellidos: Ramírez
+ *                     dias_transcurridos: 3
+ *               sinValoraciones:
+ *                 summary: Usuario sin valoraciones recibidas
+ *                 value: []
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: Ha habido un error al consultar los datos
+ */
+router.get('/usuario/get-all/:user_id', getValoracionesByUser);
 
 /**
  * @swagger

@@ -9,6 +9,16 @@ const getArticuloFotos = async (req, res) => {
     }
 };
 
+const getFotosByArticle = async (req, res) => {
+    const { article_id } = req.params;
+    try {
+        const rows = await ArticuloFotoModel.getAllFhotosByArticle(article_id);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const getArticuloFotoById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -88,6 +98,7 @@ const deleteArticuloFoto = async (req, res) => {
 
 module.exports = {
     getArticuloFotos,
+    getFotosByArticle,
     getArticuloFotoById,
     createArticuloFoto,
     updateArticuloFoto,

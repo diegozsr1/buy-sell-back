@@ -13,6 +13,20 @@ const getFavoritos = async (req, res) => {
     }
 };
 
+const getFavoritosByUser = async (req, res) => {
+    try {
+        const { user_id } = req.params;
+        const {articulos} = await FavoritoModel.getAllByUser(user_id);
+        
+        res.status(200).json(articulos);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener los favoritos',
+            error: error.message,
+        });
+    }
+};
+
 // GET /favoritos/:id
 const getFavoritoById = async (req, res) => {
     try {
@@ -122,6 +136,7 @@ const deleteFavorito = async (req, res) => {
 
 module.exports = {
     getFavoritos,
+    getFavoritosByUser,
     getFavoritoById,
     createFavorito,
     updateFavorito,
