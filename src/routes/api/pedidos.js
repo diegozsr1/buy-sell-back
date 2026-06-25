@@ -7,6 +7,7 @@ const {
     createPedido,
     updatePedido,
     deletePedido,
+    getPedidoByIdTodosDatos,
 } = require('../../controllers/pedidos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -166,6 +167,10 @@ router.get('/usuario/:usuarioId', checkToken, getPedidosByUsuario);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/:id', checkToken, getPedidoById);
+
+/*TODO: swagger */
+/*Devuelve todos los datos de un pedido por id, los datos del pedido, del vendedor y del artículo comprado*/
+router.get('/:id/todos-datos', checkToken, getPedidoByIdTodosDatos);
 
 /**
  * @swagger

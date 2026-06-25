@@ -43,6 +43,23 @@ const getPedidoById = async (req, res) => {
     }
 };
 
+const getPedidoByIdTodosDatos = async (req, res) => {
+    try {
+        const { id } = await pedidoIdSchema.validate(req.params, validationOptions);
+        const resultado = await PedidoModel.getAllDataById(id);
+
+        if (!resultado) {
+            return res.status(404).json({ mensaje: 'Pedido no encontrado' });
+        }
+
+        res.json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
 const createPedido = async (req, res) => {
     try {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
@@ -121,6 +138,7 @@ const getPedidosByUsuario = async (req, res) => {
 module.exports = {
     getPedidos,
     getPedidoById,
+    getPedidoByIdTodosDatos,
     getVentasByUsuario,
     getPedidosByUsuario,
     createPedido,
