@@ -123,11 +123,24 @@ const getVentasByUsuario = async (req, res) => {
     }
 };
 
+const getPedidosByUsuario = async (req, res) => {
+    try {
+        const { usuarioId } = await pedidoUsuarioIdSchema.validate(req.params, validationOptions);
+        const resultado = await PedidoModel.getByCompradorId(usuarioId);
+        res.json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
 module.exports = {
     getPedidos,
     getPedidoById,
     getPedidoByIdTodosDatos,
     getVentasByUsuario,
+    getPedidosByUsuario,
     createPedido,
     updatePedido,
     deletePedido,

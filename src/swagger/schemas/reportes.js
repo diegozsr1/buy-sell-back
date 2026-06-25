@@ -12,6 +12,12 @@ module.exports = {
             motivo: { type: 'string', example: 'Contenido inapropiado' },
             descripcion: { type: 'string', example: 'El artículo no coincide con la descripción publicada.' },
             estado: { type: 'string', enum: ESTADOS_REPORTE, example: 'Pendiente' },
+            resultado_reporte: {
+                type: 'string',
+                nullable: true,
+                example: 'Tras revisar el caso, se confirma que el artículo incumple las normas y ha sido retirado.',
+                description: 'Resolución del moderador tras revisar el reporte. Null mientras esté pendiente.',
+            },
             created_at: { type: 'string', format: 'date-time' },
             updated_at: { type: 'string', format: 'date-time' },
         },
@@ -27,6 +33,11 @@ module.exports = {
             motivo: { type: 'string', example: 'Contenido inapropiado' },
             descripcion: { type: 'string', example: 'El artículo no coincide con la descripción publicada.' },
             estado: { type: 'string', enum: ESTADOS_REPORTE, example: 'Pendiente' },
+            resultado_reporte: {
+                type: 'string',
+                nullable: true,
+                example: 'Tras revisar el caso, se confirma que el artículo incumple las normas y ha sido retirado.',
+            },
         },
     },
 };

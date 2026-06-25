@@ -3,6 +3,7 @@ const {
     getPedidos,
     getPedidoById,
     getVentasByUsuario,
+    getPedidosByUsuario,
     createPedido,
     updatePedido,
     deletePedido,
@@ -86,6 +87,48 @@ router.get('/', checkToken, getPedidos);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/usuario/:usuarioId/ventas', checkToken, getVentasByUsuario);
+
+/**
+ * @swagger
+ * /api/pedidos/usuario/{usuarioId}:
+ *   get:
+ *     summary: Pedidos realizados por un usuario
+ *     description: Devuelve todos los pedidos en los que el usuario actúa como comprador, con el nombre del artículo, ordenados del más reciente al más antiguo.
+ *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: usuarioId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario comprador
+ *         example: 5
+ *     responses:
+ *       200:
+ *         description: Lista de pedidos del usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/PedidoUsuario'
+ *       400:
+ *         description: ID de usuario no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/usuario/:usuarioId', checkToken, getPedidosByUsuario);
 
 /**
  * @swagger
