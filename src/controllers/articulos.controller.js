@@ -1,6 +1,7 @@
 const ArticuloModel = require('../models/articulos.model.js');
 const UsuarioModel = require('../models/usuarios.model.js');
-const { articuloUsuarioIdSchema } = require('../schemas/articulos.schema.js');
+const ArticulosExplorarService = require('../services/articulos-explorar.service.js');
+const { articuloUsuarioIdSchema, articulosExplorarQuerySchema } = require('../schemas/articulos.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
@@ -12,6 +13,22 @@ const handleValidationError = (error, res) => {
         });
     }
     return null;
+};
+
+// GET /articulos/explorar
+const getArticulosExplorar = async (req, res) => {
+    try {
+        const filtros = await articulosExplorarQuerySchema.validate(req.query, validationOptions);
+        const resultado = await ArticulosExplorarService.getArticulosExplorar(filtros);
+        res.status(200).json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        res.status(500).json({
+            mensaje: 'Error al obtener los artículos para explorar',
+            error: error.message,
+        });
+    }
 };
 
 // GET /articulos
@@ -270,6 +287,7 @@ const getArticulosPublicadosByUsuario = async (req, res) => {
 
 module.exports = {
     getArticulos,
+    getArticulosExplorar,
     getArticulosPorUsuario,
     getArticulosRecientes,
     getArticulosMasVendidos,

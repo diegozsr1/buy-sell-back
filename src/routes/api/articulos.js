@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {
     getArticulos,
+    getArticulosExplorar,
     getArticuloById,
     getArticulosRecientes,
     getArticulosMasVendidos,
@@ -73,6 +74,71 @@ router.get('/get-all/usuario/:user_id',getArticulosPorUsuario);
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.get('/recientes', getArticulosRecientes);
+
+/**
+ * @swagger
+ * /api/articulos/explorar:
+ *   get:
+ *     summary: Explorar artículos con detalle y paginación
+ *     description: Devuelve artículos publicados o vendidos con datos del vendedor, categoría, foto y valoraciones. Soporta filtros y ordenación para la pantalla de exploración.
+ *     tags: [Artículos]
+ *     parameters:
+ *       - in: query
+ *         name: pagina
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *       - in: query
+ *         name: por_pagina
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 50
+ *           default: 12
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         description: Texto de búsqueda en título y descripción
+ *       - in: query
+ *         name: categorias_id
+ *         schema:
+ *           type: string
+ *         description: IDs de categoría separados por coma (ej. 1,2,3)
+ *       - in: query
+ *         name: precio_min
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: precio_max
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: estado_conservacion
+ *         schema:
+ *           type: string
+ *         description: Estados separados por coma (Nuevo, Como nuevo, Buen estado...)
+ *       - in: query
+ *         name: ubicacion
+ *         schema:
+ *           type: string
+ *         description: Filtra por CP o zona geográfica del vendedor
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [relevancia, precio-asc, precio-desc, recientes]
+ *           default: relevancia
+ *     responses:
+ *       200:
+ *         description: Listado paginado de artículos con detalle
+ *       400:
+ *         description: Parámetros de consulta no válidos
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/explorar', getArticulosExplorar);
 
 /**
  * @swagger
