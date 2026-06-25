@@ -58,7 +58,6 @@ module.exports = {
     getAll,
     getAllFhotosByArticle,
     getById,
-    getByArticuloId,
     create,
     update,
     deleteById,

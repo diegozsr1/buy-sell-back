@@ -77,7 +77,7 @@ router.get('/get-all-by-article/:article_id', getFotosByArticle);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/articulo/:articuloId', getFotosByArticuloId);
+
 
 /**
  * @swagger
