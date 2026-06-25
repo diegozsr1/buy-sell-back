@@ -35,7 +35,7 @@ const create = async (data) => {
             usuario_reportado_id ?? null,
             usuario_reportante_id,
             articulos_id ?? null,
-            moderador_id,
+            moderador_id ?? null,
             motivo,
             descripcion,
             estado,

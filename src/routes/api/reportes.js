@@ -113,7 +113,7 @@ router.get('/:id', checkToken, checkModerator, getReporteById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', checkToken, checkModerator, createReporte);
+router.post('/', checkToken, createReporte);
 
 /**
  * @swagger

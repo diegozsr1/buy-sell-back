@@ -32,13 +32,14 @@ const reporteSchema = yup.object({
         .positive('El id del usuario reportante debe ser positivo')
         .required('El usuario reportante es obligatorio'),
     articulos_id: nullableId('artículo'),
-    moderador_id: yup
-        .number()
-        .integer('El id del moderador debe ser un número entero')
-        .positive('El id del moderador debe ser positivo')
-        .required('El moderador es obligatorio'),
+    moderador_id: nullableId('moderador'),
     motivo: yup.string().trim().required('El motivo es obligatorio'),
-    descripcion: yup.string().trim().required('La descripción es obligatoria'),
+    descripcion: yup.string().trim().nullable().optional()
+    .transform((value, originalValue) =>
+        originalValue === '' || originalValue === null || originalValue === undefined
+            ? null
+            : value
+    ),
     estado: yup
         .string()
         .oneOf(ESTADOS_REPORTE, `El estado debe ser uno de: ${ESTADOS_REPORTE.join(', ')}`)
