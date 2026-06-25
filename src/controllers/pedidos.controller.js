@@ -1,4 +1,6 @@
 const PedidoModel = require('../models/pedidos.model.js');
+const UsuarioModel = require('../models/usuarios.model.js');
+const { sendEmail } = require('../services/email.service.js');
 const {
     pedidoIdSchema,
     pedidoSchema,
@@ -64,6 +66,20 @@ const createPedido = async (req, res) => {
     try {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
         const resultado = await PedidoModel.create(datosValidados);
+
+        try {
+            const comprador = await UsuarioModel.getById(datosValidados.comprador_id);
+            if (comprador?.email) {
+                await sendEmail({
+                    to: comprador.email,
+                    subject: 'Confirmación de pedido - Buy&Sell',
+                    body: `Tu pedido #${resultado.id} se ha registrado correctamente.`,
+                    isHtml: false,
+                });
+            }
+        } catch (emailError) {
+            console.error('Error al enviar correo del pedido:', emailError);
+        }
 
         res.status(201).json({
             id: resultado.id,
