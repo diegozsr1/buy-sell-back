@@ -41,6 +41,22 @@ const getAllByUser = async (user_id) => {
         };
 };
 
+const getAllFavoriteUsersByUser = async (user_id) => {
+    const [rows] = await db.query(`
+        SELECT uf.*,u.nombre,u.apellidos,v.cantidad,v.valoracion
+            FROM usuarios_favoritos uf
+            LEFT JOIN usuarios u ON uf.usuario_favorito_id=u.id
+            LEFT JOIN (SELECT a.usuarios_id,count(a.usuarios_id)as cantidad,avg(v.puntuacion) as valoracion 
+                    FROM valoraciones v 
+                    LEFT JOIN articulos a ON a.id=v.articulos_id 
+                    GROUP BY a.usuarios_id 
+                    ) v ON uf.usuario_favorito_id=v.usuarios_id
+            WHERE uf.usuarios_id=?
+        `,[user_id]);
+    
+        return rows;
+};
+
 const getById = async (id) => {
     const [rows] = await db.query(
         'SELECT * FROM favoritos WHERE id = ?',
@@ -88,6 +104,7 @@ const deleteById = async (id) => {
 module.exports = {
     getAll,
     getAllByUser,
+    getAllFavoriteUsersByUser,
     getById,
     create,
     update,
