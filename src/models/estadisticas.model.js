@@ -43,14 +43,14 @@ const getDashboard = async (temporalidad) => {
     ),
     countEnRango(
       `SELECT COUNT(*) AS total FROM usuarios
-             WHERE bloqueado = 0 AND created_at >= ? AND created_at < ?`,
+             WHERE bloqueado = 0 AND estado = 1 AND created_at >= ? AND created_at < ?`,
       [],
       actual.desde,
       actual.hasta,
     ),
     countEnRango(
       `SELECT COUNT(*) AS total FROM usuarios
-             WHERE bloqueado = 0 AND created_at >= ? AND created_at < ?`,
+             WHERE bloqueado = 0 AND estado = 1 AND created_at >= ? AND created_at < ?`,
       [],
       anterior.desde,
       anterior.hasta,

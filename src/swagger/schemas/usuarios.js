@@ -17,6 +17,7 @@ module.exports = {
             zona_geografica: { type: 'string', nullable: true, example: null },
             cp: { type: 'string', nullable: true, example: '08001', pattern: '^\\d{5}$' },
             bloqueado: { type: 'integer', enum: [0, 1], example: 0 },
+            estado: { type: 'integer', enum: [0, 1], example: 1, description: '1 = activo, 0 = eliminado (borrado lógico)' },
             created_at: { type: 'string', format: 'date-time' },
         },
     },
