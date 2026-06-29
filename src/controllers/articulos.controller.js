@@ -207,7 +207,8 @@ const updateArticulo = async (req, res) => {
                         subject: `Se ha resuelto su revisión sobre el artículo ${rows[0].titulo}`,
                         body: `
                             <p>${cuerpo}</p>
-                            <p>${(nota)?`Comentario del moderador: ${nota}`:''}</p>                            
+                            <p>${(nota)?`Comentario del moderador: ${nota}`:''}</p>
+                            <p>El artículo ha sido ${(estado_articulo_id==='Publicado')?'Reactivado':'Retirado'}</p>                         
                         `,
                         isHtml: true,
                     });
