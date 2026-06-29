@@ -59,8 +59,8 @@ const checkAdmin = (req, res, next) => {
 const checkModerator = (req, res, next) => {
     if (isAuthBypassEnabled()) return next();
 
-    // chequea rol de moderador. lo recibe de checktoken mediante req.usuario.rol
-    if (req.usuario.roles_id !== 'Moderador') return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Moderador' });
+    // chequea rol de moderador y admin. lo recibe de checktoken mediante req.usuario.rol
+    if (req.usuario.roles_id !== 'Moderador' && req.usuario.roles_id !== 'Administrador') return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Moderador o Administrador' });
     next();
 }
 

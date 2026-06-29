@@ -11,6 +11,31 @@ const omitPassword = (usuario) => {
 
 const hashPassword = async (password) => bcrypt.hash(password, SALT_ROUNDS);
 
+const duplicateError = (campo, mensaje) => {
+    const error = new Error(mensaje);
+    error.code = 'DUPLICATE_FIELD';
+    error.campo = campo;
+    return error;
+};
+
+const existsByUsername = async (username, excludeId = null) => {
+    const sql = excludeId
+        ? `SELECT id FROM usuarios WHERE username = ? AND id != ? LIMIT 1`
+        : `SELECT id FROM usuarios WHERE username = ? LIMIT 1`;
+    const params = excludeId ? [username, excludeId] : [username];
+    const result = await db.query(sql, params);
+    return result[0].length > 0;
+};
+
+const existsByEmail = async (email, excludeId = null) => {
+    const sql = excludeId
+        ? `SELECT id FROM usuarios WHERE email = ? AND id != ? LIMIT 1`
+        : `SELECT id FROM usuarios WHERE email = ? LIMIT 1`;
+    const params = excludeId ? [email, excludeId] : [email];
+    const result = await db.query(sql, params);
+    return result[0].length > 0;
+};
+
 const getAll = async () => {
     const result = await db.query(`SELECT * FROM usuarios WHERE estado = 1`);
     return result[0].map(omitPassword);
@@ -57,6 +82,13 @@ const create = async (usuario) => {
         bloqueado
     } = usuario;
 
+    if (await existsByUsername(username)) {
+        throw duplicateError('username', 'Ese nombre de usuario ya está en uso');
+    }
+    if (await existsByEmail(email)) {
+        throw duplicateError('email', 'Ese email ya está registrado');
+    }
+
     const hashedPassword = await hashPassword(password);
 
     const result = await db.query(
@@ -83,21 +115,36 @@ const create = async (usuario) => {
 };
 
 const update = async (id, usuario) => {
-    const {
-        nombre,
-        apellidos,
-        username,
-        email,
-        password,
-        foto,
-        roles_id,
-        direccion,
-        zona_geografica,
-        cp,
-        bloqueado
-    } = usuario;
+    const existingResult = await db.query(
+        `SELECT * FROM usuarios WHERE id = ? AND estado = 1`,
+        [id]
+    );
+    const existing = existingResult[0][0];
+    if (!existing) return false;
 
-    const hashedPassword = await hashPassword(password);
+    const nombre = usuario.nombre !== undefined ? usuario.nombre : existing.nombre;
+    const apellidos = usuario.apellidos !== undefined ? usuario.apellidos : existing.apellidos;
+    const username = usuario.username !== undefined ? usuario.username : existing.username;
+    const email = usuario.email !== undefined ? usuario.email : existing.email;
+    const foto = usuario.foto !== undefined ? usuario.foto : existing.foto;
+    const roles_id = usuario.roles_id !== undefined ? usuario.roles_id : existing.roles_id;
+    const direccion = usuario.direccion !== undefined ? usuario.direccion : existing.direccion;
+    const zona_geografica = usuario.zona_geografica !== undefined
+        ? usuario.zona_geografica
+        : existing.zona_geográfica;
+    const cp = usuario.cp !== undefined ? usuario.cp : existing.cp;
+    const bloqueado = usuario.bloqueado !== undefined ? usuario.bloqueado : existing.bloqueado;
+
+    if (usuario.username !== undefined && await existsByUsername(username, id)) {
+        throw duplicateError('username', 'Ese nombre de usuario ya está en uso');
+    }
+    if (usuario.email !== undefined && await existsByEmail(email, id)) {
+        throw duplicateError('email', 'Ese email ya está registrado');
+    }
+
+    const password = usuario.password !== undefined
+        ? await hashPassword(usuario.password)
+        : existing.password;
 
     const result = await db.query(
         `UPDATE usuarios SET
@@ -118,7 +165,7 @@ const update = async (id, usuario) => {
             apellidos,
             username,
             email,
-            hashedPassword,
+            password,
             foto ?? null,
             roles_id,
             direccion ?? null,

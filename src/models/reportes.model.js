@@ -15,6 +15,25 @@ const getById = async (id) => {
     return rows[0];
 };
 
+const getAllByArticleId = async (article_id) => {
+    const [rows] = await db.query(
+        `
+        SELECT 	count(r.id) AS total,
+            max(r.usuario_reportado_id) AS usuario,
+            max(r.estado)AS estado,
+            max(u.nombre) as nombre,
+            max(u.email) AS email,
+            max(a.titulo) AS titulo
+        FROM reportes r
+        LEFT JOIN usuarios u ON r.usuario_reportado_id=u.id
+        LEFT JOIN articulos a ON a.id=r.articulos_id
+        WHERE r.articulos_id=?
+        GROUP BY r.estado
+        `,[article_id]
+    );
+    return rows;
+};
+
 const create = async (data) => {
     const {
         usuario_reportado_id,
@@ -98,6 +117,7 @@ const deleteById = async (id) => {
 module.exports = {
     getAll,
     getById,
+    getAllByArticleId,
     create,
     update,
     deleteById,
