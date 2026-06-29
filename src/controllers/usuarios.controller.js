@@ -1,6 +1,7 @@
 const UsuarioModel = require('../models/usuarios.model.js');
 const {
     usuarioSchema,
+    usuarioUpdateSchema,
     usuarioIdSchema,
     usuarioRolSchema,
     usuarioBloqueadoSchema
@@ -15,6 +16,33 @@ const handleValidationError = (error, res) => {
             detalles: error.errors
         });
     }
+    return null;
+};
+
+const handleDuplicateError = (error, res) => {
+    if (error.code === 'DUPLICATE_FIELD') {
+        return res.status(409).json({
+            error: error.message,
+            campo: error.campo
+        });
+    }
+
+    if (error.code === 'ER_DUP_ENTRY') {
+        if (error.sqlMessage?.includes('username')) {
+            return res.status(409).json({
+                error: 'Ese nombre de usuario ya está en uso',
+                campo: 'username'
+            });
+        }
+        if (error.sqlMessage?.includes('email')) {
+            return res.status(409).json({
+                error: 'Ese email ya está registrado',
+                campo: 'email'
+            });
+        }
+        return res.status(409).json({ error: 'Ya existe un usuario con esos datos' });
+    }
+
     return null;
 };
 
@@ -90,6 +118,8 @@ const createUsuario = async (req, res) => {
     } catch (error) {
         const validationResponse = handleValidationError(error, res);
         if (validationResponse) return validationResponse;
+        const duplicateResponse = handleDuplicateError(error, res);
+        if (duplicateResponse) return duplicateResponse;
         return res.status(500).json({ error: 'Ha habido un error al crear el usuario: ' + error.message });
     }
 };
@@ -97,7 +127,7 @@ const createUsuario = async (req, res) => {
 const updateUsuario = async (req, res) => {
     try {
         const { id } = await usuarioIdSchema.validate(req.params, validationOptions);
-        const datosValidados = await usuarioSchema.validate(req.body, validationOptions);
+        const datosValidados = await usuarioUpdateSchema.validate(req.body, validationOptions);
         const actualizado = await UsuarioModel.update(id, datosValidados);
 
         if (actualizado) {
@@ -109,6 +139,8 @@ const updateUsuario = async (req, res) => {
     } catch (error) {
         const validationResponse = handleValidationError(error, res);
         if (validationResponse) return validationResponse;
+        const duplicateResponse = handleDuplicateError(error, res);
+        if (duplicateResponse) return duplicateResponse;
         return res.status(500).json({ error: 'Ha habido un error al actualizar el usuario' });
     }
 };
