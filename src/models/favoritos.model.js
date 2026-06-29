@@ -9,6 +9,7 @@ const getAll = async () => {
 const getAllByUser = async (user_id) => {
     const [rows] = await db.query(`
         SELECT 
+            f.id AS favoritos_id,
             a.*,
             (SELECT COUNT(*) 
             FROM favoritos 
