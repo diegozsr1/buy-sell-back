@@ -67,6 +67,77 @@ const usuarioSchema = yup.object({
         .optional()
 }).noUnknown(true, 'Campo no permitido');
 
+const usuarioUpdateSchema = yup.object({
+    id: yup.number().integer().positive().strip(),
+    nombre: yup
+        .string()
+        .trim()
+        .max(45, 'El nombre no puede superar 45 caracteres')
+        .optional(),
+    apellidos: yup
+        .string()
+        .trim()
+        .max(100, 'Los apellidos no pueden superar 100 caracteres')
+        .optional(),
+    username: yup
+        .string()
+        .trim()
+        .max(45, 'El username no puede superar 45 caracteres')
+        .optional(),
+    email: yup
+        .string()
+        .trim()
+        .email('El email no es válido')
+        .max(100, 'El email no puede superar 100 caracteres')
+        .optional(),
+    password: yup
+        .string()
+        .min(6, 'La contraseña debe tener al menos 6 caracteres')
+        .max(255, 'La contraseña no puede superar 255 caracteres')
+        .optional(),
+    foto: yup
+        .string()
+        .trim()
+        .max(255, 'La foto no puede superar 255 caracteres')
+        .optional(),
+    roles_id: yup
+        .string()
+        .oneOf(ROLES, `El rol debe ser uno de: ${ROLES.join(', ')}`)
+        .optional(),
+    direccion: yup
+        .string()
+        .trim()
+        .max(255, 'La dirección no puede superar 255 caracteres')
+        .optional(),
+    zona_geografica: yup
+        .string()
+        .trim()
+        .max(100, 'La zona geográfica no puede superar 100 caracteres')
+        .optional(),
+    cp: yup
+        .string()
+        .trim()
+        .matches(/^\d{5}$/, 'El código postal debe tener 5 dígitos')
+        .nullable()
+        .optional()
+        .transform((value, originalValue) =>
+            originalValue === '' || originalValue === null || originalValue === undefined
+                ? null
+                : String(originalValue).trim()
+        ),
+    bloqueado: yup
+        .number()
+        .integer()
+        .oneOf([0, 1], 'El campo bloqueado debe ser 0 o 1')
+        .optional()
+})
+    .noUnknown(true, 'Campo no permitido')
+    .test(
+        'min-one-field',
+        'Debe enviar al menos un campo para actualizar',
+        (obj) => obj && Object.keys(obj).length > 0
+    );
+
 const usuarioIdSchema = yup.object({
     id: yup
         .number()
@@ -94,6 +165,7 @@ const usuarioBloqueadoSchema = yup.object({
 
 module.exports = {
     usuarioSchema,
+    usuarioUpdateSchema,
     usuarioIdSchema,
     usuarioRolSchema,
     usuarioBloqueadoSchema
