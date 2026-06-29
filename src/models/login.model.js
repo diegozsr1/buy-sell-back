@@ -5,7 +5,12 @@ const getByEmail = async (email) => {
         `SELECT * FROM usuarios WHERE email = ? AND estado = 1`,
         [email]
     );
-    return result[0][0] ?? null;
+    const usuario = result[0][0] ?? null;
+    if (!usuario) return null;
+    if (usuario.bloqueado === 1) {
+        return { blocked: true, error: 'Usuario bloqueado' };
+    }
+    return usuario;
 };
 
 module.exports = {
