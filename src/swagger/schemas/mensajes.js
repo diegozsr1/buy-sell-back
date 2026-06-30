@@ -7,17 +7,15 @@ module.exports = {
             receptor_id: { type: 'integer', example: 2 },
             emisor_id: { type: 'integer', example: 5 },
             mensaje: { type: 'string', example: '¿Sigue disponible el artículo?' },
+            leido: { type: 'integer', enum: [0, 1], example: 0 },
             enviado_en: { type: 'string', format: 'date-time' },
         },
     },
-    MensajeRequest: {
+    MensajeCreateResponse: {
         type: 'object',
-        required: ['conversaciones_id', 'receptor_id', 'emisor_id', 'mensaje'],
         properties: {
-            conversaciones_id: { type: 'integer', example: 4 },
-            receptor_id: { type: 'integer', example: 2 },
-            emisor_id: { type: 'integer', example: 5 },
-            mensaje: { type: 'string', example: '¿Sigue disponible el artículo?' },
+            mensaje: { type: 'string', example: 'Mensaje enviado correctamente' },
+            data: { $ref: '#/components/schemas/Mensaje' },
         },
     },
 };

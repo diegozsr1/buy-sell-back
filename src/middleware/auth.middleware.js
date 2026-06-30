@@ -15,58 +15,78 @@ const getBypassUsuario = () => ({
     bloqueado: 0,
 });
 
-const checkToken = async (req, res, next) => {
-    if (isAuthBypassEnabled()) {
-        req.usuario = getBypassUsuario();
-        return next();
-    }
+const extractBearerToken = (authorizationHeader) => {
+    if (!authorizationHeader) return null;
+    const [scheme, token] = authorizationHeader.split(' ');
+    if (scheme !== 'Bearer' || !token) return null;
+    return token;
+};
 
-    // Cabecera de autorización
-    const authHeader = req.headers.authorization;
+const resolveUsuarioFromToken = async (token) => {
+    if (!token) return null;
 
-    // Existe Token
-    if (!authHeader) {
-        return res.status(401).json({ error: 'No se proporcionó un token de autenticación' });
-    }
-
-    // Validación token
-    const token = authHeader.split(' ')[1]; // Bearer <token>
-    let decoded;
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await UsuarioModel.getById(decoded.id);
+        return user || null;
+    } catch {
+        return null;
+    }
+};
+
+const resolveUsuario = async ({ token, allowBypass = true }) => {
+    const userFromToken = await resolveUsuarioFromToken(token);
+    if (userFromToken) return userFromToken;
+
+    if (allowBypass && isAuthBypassEnabled()) {
+        return getBypassUsuario();
+    }
+
+    return null;
+};
+
+const checkToken = async (req, res, next) => {
+    const token = extractBearerToken(req.headers.authorization);
+    const user = await resolveUsuario({ token, allowBypass: true });
+
+    if (!user) {
+        if (!token) {
+            return res.status(401).json({ error: 'No se proporcionó un token de autenticación' });
+        }
         return res.status(401).json({ error: 'Token de autenticación inválido' });
     }
 
-    // Existe el usuario referido
-    const user = await UsuarioModel.getById(decoded.id)
-    if(!user) {
-        return res.status(401).json({ error: 'Usuario no encontrado' });
-    }
     req.usuario = user;
-
     next();
-}
+};
 
 const checkAdmin = (req, res, next) => {
-    if (isAuthBypassEnabled()) return next();
+    if (isAuthBypassEnabled() && req.usuario?.id === 0) return next();
 
-    // chequea rol de administrador. lo recibe de checktoken mediante req.usuario.rol
-    if (req.usuario.roles_id !== 'Administrador') return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Administrador' });
+    if (req.usuario.roles_id !== 'Administrador') {
+        return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Administrador' });
+    }
     next();
-}
+};
 
 const checkModerator = (req, res, next) => {
-    if (isAuthBypassEnabled()) return next();
+    if (isAuthBypassEnabled() && req.usuario?.id === 0) return next();
 
-    // chequea rol de moderador y admin. lo recibe de checktoken mediante req.usuario.rol
-    if (req.usuario.roles_id !== 'Moderador' && req.usuario.roles_id !== 'Administrador') return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de Moderador o Administrador' });
+    if (req.usuario.roles_id !== 'Moderador' && req.usuario.roles_id !== 'Administrador') {
+        return res.status(403).json({
+            error: 'Acceso denegado. Se requiere rol de Moderador o Administrador',
+        });
+    }
     next();
-}
+};
 
 module.exports = {
     checkToken,
     checkAdmin,
     checkModerator,
     isAuthBypassEnabled,
+    getBypassUsuario,
+    resolveUsuario,
+    resolveUsuarioFromToken,
+    extractBearerToken,
 };

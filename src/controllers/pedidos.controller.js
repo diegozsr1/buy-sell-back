@@ -65,7 +65,7 @@ const getPedidoByIdTodosDatos = async (req, res) => {
 const createPedido = async (req, res) => {
     try {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
-        const resultado = await PedidoModel.create(datosValidados);
+        const resultado = await PedidoModel.createWithConversacion(datosValidados);
 
         try {
             const comprador = await UsuarioModel.getById(datosValidados.comprador_id);

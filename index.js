@@ -1,12 +1,14 @@
 // Server creation and configuration
 const http = require("node:http");
 const app = require("./src/app");
+const { initSocket } = require("./src/socket");
 
 // Config .env
 require("dotenv").config();
 
 // Server creation
 const server = http.createServer(app);
+initSocket(server);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT);

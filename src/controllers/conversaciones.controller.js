@@ -1,10 +1,43 @@
 const ConversacionModel = require('../models/conversaciones.model.js');
+const MensajeModel = require('../models/mensajes.model.js');
+const {
+    assertParticipante,
+    assertParticipantePedido,
+} = require('../services/mensajeria.service.js');
+const {
+    enviarMensaje,
+    marcarConversacionLeida,
+} = require('../services/mensajes-envio.service.js');
+const { emitMensajeNuevo, emitMensajesLeidos } = require('../socket/io.js');
+const {
+    conversacionIdSchema,
+    pedidoIdParamSchema,
+    mensajeCreateSchema,
+} = require('../schemas/mensajeria.schema.js');
 
-// GET /conversaciones
-const getConversaciones = async (req, res) => {
+const validationOptions = { abortEarly: false, stripUnknown: true };
+
+const handleValidationError = (error, res) => {
+    if (error.name === 'ValidationError') {
+        return res.status(400).json({
+            error: 'Error de validación',
+            detalles: error.errors,
+        });
+    }
+    return null;
+};
+
+const handleServiceError = (error, res) => {
+    if (error.statusCode) {
+        return res.status(error.statusCode).json({ mensaje: error.message });
+    }
+    return null;
+};
+
+const getMisConversaciones = async (req, res) => {
     try {
-        const rows = await ConversacionModel.getAll();
-        res.status(200).json(rows);
+        const conversaciones = await ConversacionModel.getByUsuarioId(req.usuario.id);
+        res.status(200).json(conversaciones);
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener las conversaciones',
@@ -13,12 +46,59 @@ const getConversaciones = async (req, res) => {
     }
 };
 
-// GET /conversaciones/:id
+const getNoLeidosCount = async (req, res) => {
+    try {
+        const total = await MensajeModel.getUnreadCountByUsuario(req.usuario.id);
+        res.status(200).json({ total });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener los mensajes no leídos',
+            error: error.message,
+        });
+    }
+};
+
+const getConversacionByPedidoId = async (req, res) => {
+    try {
+        const { pedidoId } = await pedidoIdParamSchema.validate(
+            req.params,
+            validationOptions
+        );
+
+        await assertParticipantePedido(pedidoId, req.usuario.id);
+
+        const conversacion = await ConversacionModel.getByPedidoId(pedidoId);
+        if (!conversacion) {
+            return res.status(404).json({
+                mensaje: 'Conversación no encontrada para este pedido',
+            });
+        }
+
+        res.status(200).json(conversacion);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        const serviceResponse = handleServiceError(error, res);
+        if (serviceResponse) return serviceResponse;
+
+        res.status(500).json({
+            mensaje: 'Error al obtener la conversación',
+            error: error.message,
+        });
+    }
+};
+
 const getConversacionById = async (req, res) => {
     try {
-        const { id } = req.params;
-        const conversacion = await ConversacionModel.getById(id);
+        const { id } = await conversacionIdSchema.validate(
+            req.params,
+            validationOptions
+        );
 
+        await assertParticipante(id, req.usuario.id);
+
+        const conversacion = await ConversacionModel.getById(id);
         if (!conversacion) {
             return res.status(404).json({
                 mensaje: 'Conversación no encontrada',
@@ -27,6 +107,12 @@ const getConversacionById = async (req, res) => {
 
         res.status(200).json(conversacion);
     } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        const serviceResponse = handleServiceError(error, res);
+        if (serviceResponse) return serviceResponse;
+
         res.status(500).json({
             mensaje: 'Error al obtener la conversación',
             error: error.message,
@@ -34,96 +120,90 @@ const getConversacionById = async (req, res) => {
     }
 };
 
-// POST /conversaciones
-const createConversacion = async (req, res) => {
+const getMensajesByConversacion = async (req, res) => {
     try {
-        const { comprador_id, articulos_id } = req.body;
+        const { id } = await conversacionIdSchema.validate(
+            req.params,
+            validationOptions
+        );
 
-        if (!comprador_id || !articulos_id) {
-            return res.status(400).json({
-                mensaje: 'Faltan campos obligatorios',
-            });
-        }
+        const participantes = await assertParticipante(id, req.usuario.id);
 
-        const resultado = await ConversacionModel.create({
-            comprador_id,
-            articulos_id,
+        const mensajes = await MensajeModel.getByConversacionId(id);
+        await marcarConversacionLeida({ conversacionId: id, usuarioId: req.usuario.id });
+
+        const otroUsuarioId =
+            Number(participantes.comprador_id) === Number(req.usuario.id)
+                ? Number(participantes.vendedor_id)
+                : Number(participantes.comprador_id);
+
+        emitMensajesLeidos({
+            conversacionId: id,
+            lectorId: req.usuario.id,
+            emisorId: otroUsuarioId,
+        });
+
+        res.status(200).json(mensajes);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        const serviceResponse = handleServiceError(error, res);
+        if (serviceResponse) return serviceResponse;
+
+        res.status(500).json({
+            mensaje: 'Error al obtener los mensajes',
+            error: error.message,
+        });
+    }
+};
+
+const createMensajeInConversacion = async (req, res) => {
+    try {
+        const { id } = await conversacionIdSchema.validate(
+            req.params,
+            validationOptions
+        );
+        const { mensaje } = await mensajeCreateSchema.validate(
+            req.body,
+            validationOptions
+        );
+
+        const resultado = await enviarMensaje({
+            conversacionId: id,
+            emisorId: req.usuario.id,
+            mensaje,
+        });
+
+        await emitMensajeNuevo({
+            conversacionId: resultado.conversacionId,
+            mensaje: resultado.mensajeCreado,
+            receptorId: resultado.receptorId,
         });
 
         res.status(201).json({
-            mensaje: 'Conversación creada correctamente',
-            id: resultado.id,
+            mensaje: 'Mensaje enviado correctamente',
+            data: resultado.mensajeCreado,
         });
     } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        const serviceResponse = handleServiceError(error, res);
+        if (serviceResponse) return serviceResponse;
+
         res.status(500).json({
-            mensaje: 'Error al crear la conversación',
-            error: error.message,
-        });
-    }
-};
-
-// PUT /conversaciones/:id
-const updateConversacion = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const conversacionExistente = await ConversacionModel.getById(id);
-
-        if (!conversacionExistente) {
-            return res.status(404).json({
-                mensaje: 'Conversación no encontrada',
-            });
-        }
-
-        const { comprador_id, articulos_id } = req.body;
-
-        if (!comprador_id || !articulos_id) {
-            return res.status(400).json({
-                mensaje: 'Faltan campos obligatorios',
-            });
-        }
-
-        await ConversacionModel.update(id, { comprador_id, articulos_id });
-
-        res.status(200).json({
-            mensaje: 'Conversación actualizada correctamente',
-        });
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al actualizar la conversación',
-            error: error.message,
-        });
-    }
-};
-
-// DELETE /conversaciones/:id
-const deleteConversacion = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const conversacionExistente = await ConversacionModel.getById(id);
-
-        if (!conversacionExistente) {
-            return res.status(404).json({
-                mensaje: 'Conversación no encontrada',
-            });
-        }
-
-        await ConversacionModel.deleteById(id);
-
-        res.status(200).json({
-            mensaje: 'Conversación eliminada correctamente',
-        });
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al eliminar la conversación',
+            mensaje: 'Error al enviar el mensaje',
             error: error.message,
         });
     }
 };
 
 module.exports = {
-    getConversaciones,
+    getMisConversaciones,
+    getNoLeidosCount,
+    getConversacionByPedidoId,
     getConversacionById,
-    createConversacion,
-    updateConversacion,
-    deleteConversacion,
+    getMensajesByConversacion,
+    createMensajeInConversacion,
 };

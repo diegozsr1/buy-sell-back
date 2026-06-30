@@ -86,6 +86,37 @@ const create = async (data) => {
     return { id: result.insertId };
 };
 
+const createWithConversacion = async (data) => {
+    const { comprador_id, articulos_id, estado, direccion_envio } = data;
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        const [pedidoResult] = await connection.query(
+            `INSERT INTO pedidos
+            (comprador_id, articulos_id, estado, direccion_envio)
+            VALUES (?, ?, ?, ?)`,
+            [comprador_id, articulos_id, estado, direccion_envio]
+        );
+
+        const pedidoId = pedidoResult.insertId;
+
+        await connection.query(
+            'INSERT INTO conversaciones (pedidos_id) VALUES (?)',
+            [pedidoId]
+        );
+
+        await connection.commit();
+        return { id: pedidoId };
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
 const update = async (id, data) => {
     const { comprador_id, articulos_id, estado, direccion_envio } = data;
 
@@ -135,6 +166,7 @@ module.exports = {
     getAllDataById,
     getByCompradorId,
     create,
+    createWithConversacion,
     update,
     deleteById,
     getVentasByUsuarioId,
