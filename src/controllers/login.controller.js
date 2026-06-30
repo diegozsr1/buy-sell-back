@@ -30,8 +30,8 @@ const login = async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        if (usuario.bloqueado === 1) {
-            return res.status(403).json({ error: 'Usuario bloqueado' });
+        if (usuario.blocked) {
+            return res.status(403).json({ error: usuario.error });
         }
 
         const passwordValida = await bcrypt.compare(password, usuario.password);
