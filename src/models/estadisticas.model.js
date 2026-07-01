@@ -57,7 +57,7 @@ const getDashboard = async (temporalidad) => {
     ),
     db
       .query(
-        `SELECT COUNT(*) AS total FROM reportes WHERE estado = 'Pendiente'`,
+        `SELECT COUNT(*) AS total FROM reportes WHERE estado = 'Pendiente' OR estado = 'Revisado'`,
       )
       .then(([rows]) => Number(rows[0].total)),
     db
