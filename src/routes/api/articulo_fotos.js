@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const uploadFotoMiddleware = require('../../middleware/uploadIcono.middleware.js');
 const {
     getArticuloFotos,
     getArticuloFotoById,
@@ -8,6 +9,15 @@ const {
     getFotosByArticle,
 } = require('../../controllers/articulo_fotos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
+
+const handleFotoUpload = (req, res, next) => {
+    uploadFotoMiddleware.single('photo')(req, res, (error) => {
+        if (error) {
+            return res.status(400).json({ mensaje: error.message });
+        }
+        next();
+    });
+};
 
 /**
  * @swagger
@@ -131,13 +141,22 @@ router.get('/:id', getArticuloFotoById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/ArticuloFotoRequest'
- *           example:
- *             url_foto: https://ejemplo.com/fotos/articulo-1.jpg
- *             principal: 1
- *             articulos_id: 12
+ *             type: object
+ *             required: [photo, principal, articulos_id]
+ *             properties:
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen del artículo (se sube a Cloudinary)
+ *               principal:
+ *                 type: integer
+ *                 enum: [0, 1]
+ *                 example: 1
+ *               articulos_id:
+ *                 type: integer
+ *                 example: 12
  *     responses:
  *       201:
  *         description: Foto creada correctamente
@@ -152,7 +171,7 @@ router.get('/:id', getArticuloFotoById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', checkToken, createArticuloFoto);
+router.post('/', checkToken, handleFotoUpload, createArticuloFoto);
 
 /**
  * @swagger
@@ -175,13 +194,22 @@ router.post('/', checkToken, createArticuloFoto);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/ArticuloFotoRequest'
- *           example:
- *             url_foto: https://ejemplo.com/fotos/articulo-1-nueva.jpg
- *             principal: 0
- *             articulos_id: 12
+ *             type: object
+ *             required: [principal, articulos_id]
+ *             properties:
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Nueva imagen del artículo (opcional, se sube a Cloudinary)
+ *               principal:
+ *                 type: integer
+ *                 enum: [0, 1]
+ *                 example: 0
+ *               articulos_id:
+ *                 type: integer
+ *                 example: 12
  *     responses:
  *       200:
  *         description: Foto actualizada correctamente
@@ -198,7 +226,7 @@ router.post('/', checkToken, createArticuloFoto);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', checkToken, updateArticuloFoto);
+router.put('/:id', checkToken, handleFotoUpload, updateArticuloFoto);
 
 /**
  * @swagger

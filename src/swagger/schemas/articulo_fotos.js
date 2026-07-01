@@ -5,8 +5,8 @@ module.exports = {
             id: { type: 'integer', example: 1 },
             url_foto: {
                 type: 'string',
-                example: 'https://ejemplo.com/fotos/articulo-1.jpg',
-                description: 'URL de la imagen del artículo',
+                example: 'https://res.cloudinary.com/djqduukxt/image/upload/v123/articulos/fotos/abc.jpg',
+                description: 'URL de la imagen almacenada en Cloudinary',
             },
             principal: {
                 type: 'integer',
@@ -23,11 +23,12 @@ module.exports = {
     },
     ArticuloFotoRequest: {
         type: 'object',
-        required: ['url_foto', 'principal', 'articulos_id'],
+        required: ['photo', 'principal', 'articulos_id'],
         properties: {
-            url_foto: {
+            photo: {
                 type: 'string',
-                example: 'https://ejemplo.com/fotos/articulo-1.jpg',
+                format: 'binary',
+                description: 'Imagen del artículo (se sube a Cloudinary)',
             },
             principal: {
                 type: 'integer',
@@ -44,6 +45,10 @@ module.exports = {
         type: 'object',
         properties: {
             id: { type: 'integer', example: 1 },
+            url_foto: {
+                type: 'string',
+                example: 'https://res.cloudinary.com/djqduukxt/image/upload/v123/articulos/fotos/abc.jpg',
+            },
             mensaje: { type: 'string', example: 'Foto creada correctamente' },
         },
     },
