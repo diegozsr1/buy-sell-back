@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const uploadFotoMiddleware = require('../../middleware/uploadIcono.middleware.js');
 const {
     getArticulos,
     getArticulosExplorar,
@@ -7,12 +8,23 @@ const {
     getArticulosMasVendidos,
     getArticulosPublicadosByUsuario,
     createArticulo,
+    createArticuloConFotos,
     updateArticulo,
     deleteArticulo,
     updateArticuloAndCP,
     getArticulosPorUsuario
 } = require('../../controllers/articulos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
+const { MAX_FOTOS_ARTICULO } = require('../../schemas/articulos.schema.js');
+
+const handleFotosUpload = (req, res, next) => {
+    uploadFotoMiddleware.array('photos', MAX_FOTOS_ARTICULO)(req, res, (error) => {
+        if (error) {
+            return res.status(400).json({ mensaje: error.message });
+        }
+        next();
+    });
+};
 
 /**
  * @swagger
@@ -280,6 +292,43 @@ router.get('/:id', getArticuloById);
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.post('/', checkToken, createArticulo);
+
+/**
+ * @swagger
+ * /api/articulos/con-fotos:
+ *   post:
+ *     summary: Crear un artículo con fotos
+ *     description: Crea un artículo y sube entre 1 y 5 imágenes a Cloudinary en una sola petición.
+ *     tags: [Artículos]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: '#/components/schemas/ArticuloConFotosRequest'
+ *     responses:
+ *       201:
+ *         description: Artículo creado con fotos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ArticuloConFotosCreateResponse'
+ *       400:
+ *         description: Datos o imágenes no válidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MensajeErrorResponse'
+ */
+router.post('/con-fotos', checkToken, handleFotosUpload, createArticuloConFotos);
 
 /**
  * @swagger

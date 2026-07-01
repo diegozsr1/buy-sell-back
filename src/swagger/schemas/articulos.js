@@ -25,6 +25,90 @@ module.exports = {
             updated_at: { type: 'string', format: 'date-time' },
         },
     },
+    ArticuloFotoInsertada: {
+        type: 'object',
+        properties: {
+            id: { type: 'integer', example: 1 },
+            url_foto: {
+                type: 'string',
+                example: 'https://res.cloudinary.com/djqduukxt/image/upload/v123/articulos/fotos/abc.jpg',
+            },
+            principal: {
+                type: 'integer',
+                enum: [0, 1],
+                example: 1,
+            },
+        },
+    },
+    ArticuloConFotosRequest: {
+        type: 'object',
+        required: [
+            'usuarios_id',
+            'titulo',
+            'descripcion',
+            'categorias_id',
+            'precio',
+            'estado_conservacion_id',
+            'estado_articulo_id',
+            'principal_index',
+            'photos',
+        ],
+        properties: {
+            usuarios_id: { type: 'integer', example: 2 },
+            titulo: { type: 'string', maxLength: 255, example: 'Bicicleta de montaña' },
+            descripcion: { type: 'string', example: 'Bicicleta en buen estado, poco uso.' },
+            categorias_id: { type: 'integer', example: 3 },
+            precio: { type: 'number', format: 'float', example: 250.5 },
+            estado_conservacion_id: {
+                type: 'string',
+                enum: ESTADOS_CONSERVACION,
+                example: 'Buen estado',
+            },
+            estado_articulo_id: {
+                type: 'string',
+                enum: ESTADOS_ARTICULO,
+                example: 'Publicado',
+            },
+            principal_index: {
+                type: 'integer',
+                minimum: 0,
+                example: 0,
+                description: 'Índice de la foto principal dentro del array photos (base 0)',
+            },
+            photos: {
+                type: 'array',
+                minItems: 1,
+                maxItems: 5,
+                items: {
+                    type: 'string',
+                    format: 'binary',
+                },
+                description: 'Imágenes del artículo (mínimo 1, máximo 5)',
+            },
+        },
+    },
+    ArticuloConFotosCreateResponse: {
+        type: 'object',
+        properties: {
+            mensaje: { type: 'string', example: 'Artículo creado correctamente' },
+            id: { type: 'integer', example: 1 },
+            fotos: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/ArticuloFotoInsertada' },
+            },
+            advertencias: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        index: { type: 'integer', example: 2 },
+                        mensaje: { type: 'string', example: 'Error al subir la imagen' },
+                    },
+                },
+                description: 'Imágenes que no se pudieron subir (el artículo se crea con las restantes)',
+            },
+        },
+    },
     ArticuloRequest: {
         type: 'object',
         required: [

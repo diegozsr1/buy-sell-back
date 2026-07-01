@@ -2,8 +2,9 @@ const ArticuloModel = require('../models/articulos.model.js');
 const UsuarioModel = require('../models/usuarios.model.js');
 const ReporteModel = require('../models/reportes.model.js');
 const ArticulosExplorarService = require('../services/articulos-explorar.service.js');
-const { articuloUsuarioIdSchema, articulosExplorarQuerySchema } = require('../schemas/articulos.schema.js');
+const { articuloUsuarioIdSchema, articulosExplorarQuerySchema, articuloConFotosSchema } = require('../schemas/articulos.schema.js');
 const { sendEmail } = require('../services/email.service.js');
+const { uploadFotoArticulo, deleteImage } = require('../services/cloudinary.service.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
@@ -151,6 +152,98 @@ const createArticulo = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al crear el artículo',
+            error: error.message,
+        });
+    }
+};
+
+// POST /articulos/con-fotos
+const createArticuloConFotos = async (req, res) => {
+    const fotosSubidas = [];
+
+    try {
+        const files = req.files || [];
+
+        let datos;
+        try {
+            datos = await articuloConFotosSchema.validate(req.body, {
+                abortEarly: false,
+                stripUnknown: true,
+                context: { filesCount: files.length },
+            });
+        } catch (error) {
+            const validationResponse = handleValidationError(error, res);
+            if (validationResponse) return validationResponse;
+            throw error;
+        }
+
+        const principalIdx = datos.principal_index;
+        const advertencias = [];
+
+        for (let i = 0; i < files.length; i++) {
+            try {
+                const url_foto = await uploadFotoArticulo(files[i]);
+                fotosSubidas.push({
+                    index: i,
+                    url_foto,
+                    principal: i === principalIdx ? 1 : 0,
+                });
+            } catch (error) {
+                advertencias.push({
+                    index: i,
+                    mensaje: error.message,
+                });
+            }
+        }
+
+        if (fotosSubidas.length === 0) {
+            return res.status(400).json({
+                mensaje: 'No se pudo subir ninguna imagen',
+                advertencias,
+            });
+        }
+
+        if (!fotosSubidas.some((foto) => foto.principal === 1)) {
+            fotosSubidas[0].principal = 1;
+            for (let i = 1; i < fotosSubidas.length; i++) {
+                fotosSubidas[i].principal = 0;
+            }
+            advertencias.push({
+                mensaje: 'La foto principal no se subió; se asignó la primera disponible',
+            });
+        }
+
+        const resultado = await ArticuloModel.createWithFotos(
+            {
+                usuarios_id: datos.usuarios_id,
+                titulo: datos.titulo,
+                descripcion: datos.descripcion,
+                categorias_id: datos.categorias_id,
+                precio: datos.precio,
+                estado_conservacion_id: datos.estado_conservacion_id,
+                estado_articulo_id: datos.estado_articulo_id,
+            },
+            fotosSubidas.map(({ url_foto, principal }) => ({ url_foto, principal }))
+        );
+
+        const response = {
+            mensaje: 'Artículo creado correctamente',
+            id: resultado.id,
+            fotos: resultado.fotos,
+        };
+
+        if (advertencias.length > 0) {
+            response.advertencias = advertencias;
+        }
+
+        res.status(201).json(response);
+    } catch (error) {
+        await Promise.all(
+            fotosSubidas.map((foto) => deleteImage(foto.url_foto))
+        );
+
+        res.status(500).json({
+            mensaje: 'Error al crear el artículo con fotos',
             error: error.message,
         });
     }
@@ -329,6 +422,7 @@ module.exports = {
     getArticuloById,
     getArticulosPublicadosByUsuario,
     createArticulo,
+    createArticuloConFotos,
     updateArticulo,
     updateArticuloAndCP,
     deleteArticulo

@@ -141,6 +141,74 @@ const create = async (data) => {
     return { id: result.insertId };
 };
 
+const createWithFotos = async (data, fotos) => {
+    const {
+        usuarios_id,
+        titulo,
+        descripcion,
+        categorias_id,
+        precio,
+        estado_conservacion_id,
+        estado_articulo_id,
+    } = data;
+
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        const [result] = await connection.query(
+            `INSERT INTO articulos
+            (
+                usuarios_id,
+                titulo,
+                descripcion,
+                categorias_id,
+                precio,
+                estado_conservacion_id,
+                estado_articulo_id
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+                usuarios_id,
+                titulo,
+                descripcion,
+                categorias_id,
+                precio,
+                estado_conservacion_id,
+                estado_articulo_id,
+            ]
+        );
+
+        const articuloId = result.insertId;
+        const fotosInsertadas = [];
+
+        for (const foto of fotos) {
+            const [fotoResult] = await connection.query(
+                `INSERT INTO articulo_fotos
+                (url_foto, principal, articulos_id)
+                VALUES (?, ?, ?)`,
+                [foto.url_foto, foto.principal, articuloId]
+            );
+
+            fotosInsertadas.push({
+                id: fotoResult.insertId,
+                url_foto: foto.url_foto,
+                principal: foto.principal,
+            });
+        }
+
+        await connection.commit();
+
+        return { id: articuloId, fotos: fotosInsertadas };
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
 const update = async (id, data) => {
     const {
         usuarios_id,
@@ -209,6 +277,7 @@ module.exports = {
     getRecientes,
     getMasVendidos,
     create,
+    createWithFotos,
     update,
     deleteById,
     countPublicadosByUsuarioId,
