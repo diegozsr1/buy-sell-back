@@ -189,44 +189,41 @@ const updateArticulo = async (req, res) => {
             estado_articulo_id,
         });
 
-        if(estado_articulo_id){
-            
+        if (estado_articulo_id) {
             const rows = await ReporteModel.getAllByArticleId(id);
-            let cuerpo=`Hola ${rows[0].nombre}. En referencia a su artículo "${rows[0].titulo}" tiene un total de `;
-            
-            for (const row of rows) {
-                cuerpo+=`${row.total} reporte/s en estado: ${row.estado} y `;
-            }
-            
-            cuerpo=cuerpo.slice(0,-2);
-            
-             try {
-                if (rows[0]?.email) {
-                    await sendEmail({
-                        to: rows[0].email,
-                        subject: `Se ha resuelto su revisión sobre el artículo ${rows[0].titulo}`,
-                        body: `
-                            <p>${cuerpo}</p>
-                            <p>${(nota)?`Comentario del moderador: ${nota}`:''}</p>
-                            <p>El artículo ha sido ${(estado_articulo_id==='Publicado')?'Reactivado':'Retirado'}</p>                         
-                        `,
-                        isHtml: true,
-                    });
+
+            if (rows && rows.length > 0) {
+                let cuerpo = `Hola ${rows[0].nombre}. En referencia a su artículo "${rows[0].titulo}" tiene un total de `;
+
+                for (const row of rows) {
+                    cuerpo += `${row.total} reporte/s en estado: ${row.estado} y `;
                 }
-            } catch (emailError) {
-                console.error('Error al enviar correo:', emailError);
+
+                cuerpo = cuerpo.slice(0, -2);
+
+                try {
+                    if (rows[0]?.email) {
+                        await sendEmail({
+                            to: rows[0].email,
+                            subject: `Se ha resuelto su revisión sobre el artículo ${rows[0].titulo}`,
+                            body: `
+                                <p>${cuerpo}</p>
+                                <p>${(nota) ? `Comentario del moderador: ${nota}` : ''}</p>
+                                <p>El artículo ha sido ${(estado_articulo_id === 'Publicado') ? 'Reactivado' : 'Retirado'}</p>                         
+                            `,
+                            isHtml: true,
+                        });
+                    }
+                } catch (emailError) {
+                    console.error('Error al enviar correo:', emailError);
+                }
             }
         }
-        
-        
-        
-           
-        
-        
+
         res.status(200).json({
             mensaje: 'Artículo actualizado correctamente',
         });
-        
+
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al actualizar el artículo',
