@@ -27,19 +27,7 @@ const getFavoritosByUser = async (req, res) => {
     }
 };
 
-const getFavoritosUserByUser = async (req, res) => {
-    try {
-        const { user_id } = req.params;
-        const rows = await FavoritoModel.getAllFavoriteUsersByUser(user_id);
-        
-        res.status(200).json(rows);
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al obtener los favoritos',
-            error: error.message,
-        });
-    }
-};
+//comentario
 
 // GET /favoritos/:id
 const getFavoritoById = async (req, res) => {
