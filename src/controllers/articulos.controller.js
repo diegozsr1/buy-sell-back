@@ -279,6 +279,30 @@ const updateArticuloAndCP = async (req, res) => {
 
 };
 
+const updateEstadoArticulo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const articuloExistente = await ArticuloModel.getById(id);
+
+        if (!articuloExistente) {
+            return res.status(404).json({
+                mensaje: 'Artículo no encontrado',
+            });
+        }
+
+        await ArticuloModel.updateEstadoById(id);
+
+        res.status(200).json({
+            mensaje: 'Artículo actualizado correctamente',
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al actualizar el artículo',
+            error: error.message,
+        });
+    }
+};
+
 // DELETE /articulos/:id — baja lógica: pasa el artículo a estado Retirado
 
 const deleteArticulo = async (req, res) => {
@@ -331,5 +355,6 @@ module.exports = {
     createArticulo,
     updateArticulo,
     updateArticuloAndCP,
+    updateEstadoArticulo,
     deleteArticulo
 };
