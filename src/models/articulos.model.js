@@ -247,6 +247,15 @@ const update = async (id, data) => {
     return result.affectedRows > 0;
 };
 
+const updateEstadoById = async (id) => {
+    const [result] = await db.query(
+        `UPDATE articulos SET estado_articulo_id='Vendido', updated_at=NOW() WHERE id = ? `,
+        [id]
+    );
+
+    return result.affectedRows > 0;
+};
+
 const deleteById = async (id) => {
     const [result] = await db.query(
         `UPDATE articulos SET estado_articulo_id='Retirado', updated_at=NOW() WHERE id = ? `,
@@ -279,6 +288,7 @@ module.exports = {
     create,
     createWithFotos,
     update,
+    updateEstadoById,
     deleteById,
     countPublicadosByUsuarioId,
 };

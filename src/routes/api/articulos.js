@@ -12,7 +12,8 @@ const {
     updateArticulo,
     deleteArticulo,
     updateArticuloAndCP,
-    getArticulosPorUsuario
+    getArticulosPorUsuario,
+    updateEstadoArticulo
 } = require('../../controllers/articulos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 const { MAX_FOTOS_ARTICULO } = require('../../schemas/articulos.schema.js');
@@ -379,6 +380,10 @@ router.put('/:id', checkToken, updateArticulo);
 /* todo: swagger */
 /* Actualiza un artículo y también el código postal del usuario que lo ha publicado */
 router.put('/:id/cp', checkToken, updateArticuloAndCP);
+
+/* todo: swagger */
+/* Actualiza el estado del artículo a VENDIDO */
+router.patch('/:id/actualiza-estado-vendido', checkToken, updateEstadoArticulo);
 
 /**
  * @swagger
