@@ -76,7 +76,7 @@ const getByCompradorId = async (usuarioId) => {
 const getLastByArticleId = async (articleId) => {
     const [rows] = await db.query(
         `SELECT * 
-            FROM mydb.pedidos 
+            FROM pedidos 
             WHERE articulos_id=?
             ORDER BY id DESC
             LIMIT 1`,
