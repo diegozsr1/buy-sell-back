@@ -1,6 +1,6 @@
 const yup = require('yup');
 
-const TIPOS_NOTIFICACION = ['sale', 'review', 'moderation'];
+const TIPOS_NOTIFICACION = ['sale', 'purchase', 'review', 'moderation'];
 
 const notificacionUsuarioIdSchema = yup.object({
     usuarioId: yup
@@ -49,8 +49,14 @@ const notificacionCreateSchema = yup.object({
     mensaje: yup
         .string()
         .trim()
-        .max(500, 'El mensaje no puede superar 500 caracteres')
+        .max(255, 'El mensaje no puede superar 255 caracteres')
         .required('El mensaje es obligatorio'),
+    redirect_url: yup
+        .string()
+        .trim()
+        .max(255, 'La URL de redirección no puede superar 255 caracteres')
+        .nullable()
+        .optional(),
 }).noUnknown(true, 'Campo no permitido');
 
 module.exports = {

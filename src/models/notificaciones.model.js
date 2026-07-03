@@ -36,14 +36,14 @@ const marcarComoLeidaById = async (usuarioId, notificacionId) => {
 };
 
 const create = async (data) => {
-    const { usuarios_id, articulos_id, tipo, titulo, mensaje } =
+    const { usuarios_id, articulos_id, tipo, titulo, mensaje, redirect_url } =
         await notificacionCreateSchema.validate(data, validationOptions);
 
     const [result] = await db.query(
         `INSERT INTO notificaciones
-        (usuarios_id, articulos_id, tipo, titulo, mensaje, leida)
-        VALUES (?, ?, ?, ?, ?, 0)`,
-        [usuarios_id, articulos_id, tipo, titulo, mensaje]
+        (usuarios_id, articulos_id, tipo, titulo, mensaje, redirect_url, leida)
+        VALUES (?, ?, ?, ?, ?, ?, 0)`,
+        [usuarios_id, articulos_id, tipo, titulo, mensaje, redirect_url ?? null]
     );
 
     return { id: result.insertId };
