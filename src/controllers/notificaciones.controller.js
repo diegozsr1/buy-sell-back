@@ -1,44 +1,90 @@
-const db = require('../config/db');
+const NotificacionModel = require('../models/notificaciones.model.js');
+const { isAuthBypassEnabled } = require('../middleware/auth.middleware.js');
+const { notificacionUsuarioIdSchema } = require('../schemas/notificaciones.schema.js');
 
-// 1. Trae TODAS las notificaciones (leídas y no leídas) para que siempre se vean en la pantalla
-exports.obtenerNotificaciones = async (req, res) => {
-    try {
-        const { usuarioId } = req.params;
-        const [rows] = await db.query(
-            'SELECT * FROM notificaciones WHERE usuarios_id = ? ORDER BY created_at DESC', 
-            [usuarioId]
-        );
-        res.json(rows);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+const validationOptions = { abortEarly: false, stripUnknown: true };
+
+const handleValidationError = (error, res) => {
+    if (error.name === 'ValidationError') {
+        return res.status(400).json({
+            error: 'Error de validación',
+            detalles: error.errors,
+        });
+    }
+    return null;
+};
+
+const assertUsuarioAutorizado = (req, usuarioId) => {
+    if (isAuthBypassEnabled() && req.usuario?.id === 0) {
+        return;
+    }
+
+    if (Number(req.usuario.id) !== Number(usuarioId)) {
+        const error = new Error('No tienes permiso para acceder a estas notificaciones');
+        error.statusCode = 403;
+        throw error;
     }
 };
 
-// 2. Cuenta ÚNICAMENTE las que están sin leer (leida = 0) para la campana
-exports.contarSinLeer = async (req, res) => {
+const obtenerNotificaciones = async (req, res) => {
     try {
-        const { usuarioId } = req.params;
-        const [rows] = await db.query(
-            'SELECT COUNT(*) AS total FROM notificaciones WHERE usuarios_id = ? AND leida = 0', 
-            [usuarioId]
-        );
-        const totalSinLeer = rows[0] ? rows[0].total : 0;
+        const { usuarioId } = await notificacionUsuarioIdSchema.validate(req.params, validationOptions);
+        assertUsuarioAutorizado(req, usuarioId);
+
+        const notificaciones = await NotificacionModel.getByUsuarioId(usuarioId);
+        res.json(notificaciones);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        if (error.statusCode === 403) {
+            return res.status(403).json({ error: error.message });
+        }
+
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const contarSinLeer = async (req, res) => {
+    try {
+        const { usuarioId } = await notificacionUsuarioIdSchema.validate(req.params, validationOptions);
+        assertUsuarioAutorizado(req, usuarioId);
+
+        const totalSinLeer = await NotificacionModel.countSinLeerByUsuarioId(usuarioId);
         res.json({ sinLeer: totalSinLeer });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        if (error.statusCode === 403) {
+            return res.status(403).json({ error: error.message });
+        }
+
+        res.status(500).json({ message: error.message });
     }
 };
 
-// 3. Marca como leídas (cambia a 1)
-exports.marcarComoLeidas = async (req, res) => {
+const marcarComoLeidas = async (req, res) => {
     try {
-        const { usuarioId } = req.params;
-        await db.query(
-            'UPDATE notificaciones SET leida = 1 WHERE usuarios_id = ? AND leida = 0', 
-            [usuarioId]
-        );
+        const { usuarioId } = await notificacionUsuarioIdSchema.validate(req.params, validationOptions);
+        assertUsuarioAutorizado(req, usuarioId);
+
+        await NotificacionModel.marcarComoLeidasByUsuarioId(usuarioId);
         res.json({ message: 'Notificaciones marcadas como leídas' });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        if (error.statusCode === 403) {
+            return res.status(403).json({ error: error.message });
+        }
+
+        res.status(500).json({ message: error.message });
     }
+};
+
+module.exports = {
+    obtenerNotificaciones,
+    contarSinLeer,
+    marcarComoLeidas,
 };

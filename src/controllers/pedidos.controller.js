@@ -69,17 +69,18 @@ const createPedido = async (req, res) => {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
         const resultado = await PedidoModel.createWithConversacion(datosValidados);
         const articulo = await ArticuloModel.getById(datosValidados.articulos_id);
-        console.log("articulo");
-        console.log(articulo.articulos[0]);
-        
-        const usuario = await UsuarioModel.getById(datosValidados.comprador_id);    
-        await NotificacionModel.create({
-            usuarios_id:articulo.articulos[0].usuarios_id,
-            articulos_id: articulo.id,
-            tipo: 'sale',
-            titulo: 'Nueva venta',
-            mensaje: `Han comprado tu artículo ${articulo.articulos[0].titulo} de ${usuario.nombre}`,
-        });
+        const articuloVendido = articulo.articulos[0];
+
+        if (articuloVendido) {
+            const usuario = await UsuarioModel.getById(datosValidados.comprador_id);
+            await NotificacionModel.create({
+                usuarios_id: articuloVendido.usuarios_id,
+                articulos_id: datosValidados.articulos_id,
+                tipo: 'sale',
+                titulo: 'Nueva venta',
+                mensaje: `Han comprado tu artículo ${articuloVendido.titulo} de ${usuario.nombre}`,
+            });
+        }
 
         try {
             const comprador = await UsuarioModel.getById(datosValidados.comprador_id);
