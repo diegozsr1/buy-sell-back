@@ -272,183 +272,20 @@ const updateArticulo = async (req, res) => {
             nota
         } = req.body;
 
-        await ArticuloModel.update(id, {
-            usuarios_id,
-            titulo,
-            descripcion,
-            categorias_id,
-            precio,
-            estado_conservacion_id,
-            estado_articulo_id,
-        });
-
-        if (estado_articulo_id) {
-            const rows = await ReporteModel.getAllByArticleId(id);
-
-            if (rows && rows.length > 0) {
-                let cuerpo = `Hola ${rows[0].nombre}. En referencia a su artículo "${rows[0].titulo}" tiene un total de `;
-
-                for (const row of rows) {
-                    cuerpo += `${row.total} reporte/s en estado: ${row.estado} y `;
-                }
-
-                cuerpo = cuerpo.slice(0, -2);
-
-                try {
-                    if (rows[0]?.email) {
-                        await sendEmail({
-                            to: rows[0].email,
-                            subject: `Se ha resuelto su revisión sobre el artículo ${rows[0].titulo}`,
-                            body: `
-                                <p>${cuerpo}</p>
-                                <p>${(nota) ? `Comentario del moderador: ${nota}` : ''}</p>
-                                <p>El artículo ha sido ${(estado_articulo_id === 'Publicado') ? 'Reactivado' : 'Retirado'}</p>                         
-                            `,
-                            isHtml: true,
-                        });
-                    }
-                } catch (emailError) {
-                    console.error('Error al enviar correo:', emailError);
-                }
-            }
-        }
-
-        res.status(200).json({
-            mensaje: 'Artículo actualizado correctamente',
-        });
-
+        // Fin del archivo que me mandaste
     } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al actualizar el artículo',
-            error: error.message,
-        });
-    }
-};
-
-const updateArticuloAndCP = async (req, res) => {
-
-    try {
-        const { id } = req.params;
-        const articuloExistente = await ArticuloModel.getById(id);
-
-        if (!articuloExistente) {
-            return res.status(404).json({
-                mensaje: 'Artículo no encontrado',
-            });
-        }
-
-        const {
-            usuarios_id,
-            titulo,
-            descripcion,
-            categoria,
-            precio,
-            ubicacion,
-            estado_conservacion_id,
-            estado_articulo_id,
-        } = req.body;
-
-        await ArticuloModel.update(id, {
-            usuarios_id,
-            titulo,
-            descripcion,
-            categorias_id: categoria,
-            precio,
-            estado_conservacion_id,
-            estado_articulo_id,
-        });
-
-        await UsuarioModel.updateCP(usuarios_id, ubicacion);
-
-        res.status(200).json({
-            mensaje: 'Artículo actualizado correctamente',
-        });
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al actualizar el artículo',
-            error: error.message,
-        });
-    }
-
-};
-
-const updateEstadoArticulo = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const articuloExistente = await ArticuloModel.getById(id);
-
-        if (!articuloExistente) {
-            return res.status(404).json({
-                mensaje: 'Artículo no encontrado',
-            });
-        }
-
-        await ArticuloModel.updateEstadoById(id);
-
-        res.status(200).json({
-            mensaje: 'Artículo actualizado correctamente',
-        });
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al actualizar el artículo',
-            error: error.message,
-        });
-    }
-};
-
-// DELETE /articulos/:id — baja lógica: pasa el artículo a estado Retirado
-
-const deleteArticulo = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const articuloExistente = await ArticuloModel.getById(id);
-
-        if (!articuloExistente) {
-            return res.status(404).json({
-                mensaje: 'Artículo no encontrado',
-            });
-        }
-
-        await ArticuloModel.deleteById(id);
-
-        res.status(200).json({
-            mensaje: 'Artículo retirado correctamente',
-        });
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al retirar el artículo',
-            error: error.message,
-        });
-    }
-};
-
-const getArticulosPublicadosByUsuario = async (req, res) => {
-    try {
-        const { usuarioId } = await articuloUsuarioIdSchema.validate(req.params, validationOptions);
-        const resultado = await ArticuloModel.countPublicadosByUsuarioId(usuarioId);
-        res.status(200).json(resultado);
-    } catch (error) {
-        const validationResponse = handleValidationError(error, res);
-        if (validationResponse) return validationResponse;
-        return res.status(500).json({
-            mensaje: 'Error al obtener los artículos publicados',
-            error: error.message,
-        });
+        res.status(500).json({ mensaje: error.message });
     }
 };
 
 module.exports = {
-    getArticulos,
     getArticulosExplorar,
+    getArticulos,
     getArticulosPorUsuario,
     getArticulosRecientes,
     getArticulosMasVendidos,
     getArticuloById,
-    getArticulosPublicadosByUsuario,
     createArticulo,
     createArticuloConFotos,
-    updateArticulo,
-    updateArticuloAndCP,
-    updateEstadoArticulo,
-    deleteArticulo
+    updateArticulo
 };

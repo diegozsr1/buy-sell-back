@@ -1,294 +1,53 @@
-const db = require('../config/db.js');
-const { getProvinciaFromCp, calcularZonaModa } = require('../utils/codigoPostal.utils.js');
-const ArticuloFotoModel = require('./articulo_fotos.model.js');
+const db = require('../config/db');
 
-const getAll = async () => {
-    const [rows] = await db.query('SELECT * FROM articulos');
-    return rows;
-};
-
-const getAllByUser = async (user_id) => {
-    const [rows] = await db.query(`
-        SELECT 
-            a.*,
-            (
-                SELECT p.comprador_id
-                FROM pedidos p
-                WHERE p.articulos_id = a.id
-                LIMIT 1
-            ) AS comprador_id,
-            u.nombre AS comprador_nombre,
-            u.apellidos AS comprador_apellidos,
-            f.url_foto
-        FROM articulos a
-        LEFT JOIN usuarios u 
-            ON u.id = (
-                SELECT p.comprador_id
-                FROM pedidos p
-                WHERE p.articulos_id = a.id
-                LIMIT 1
-            )
-        LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
-        WHERE a.usuarios_id = ? AND a.estado_articulo_id != 'Retirado';
-        `,
-        [user_id]);
-    return rows;
-};
-
-const getById = async (id) => {
-    const [rows] = await db.query(
-        `
-        SELECT a.*,u.cp 
-            FROM articulos a
-            LEFT JOIN usuarios u ON u.id=a.usuarios_id
-            WHERE a.id=?
-        `,
-        [id]
-    );
-
-    if (!rows.length) {
-        return { articulos: [] };
+class ArticuloModel {
+    static async getAll() {
+        const [rows] = await db.query('SELECT * FROM articulos');
+        return rows;
     }
 
-    const fotos = await ArticuloFotoModel.getAllFhotosByArticle(id);
+    static async getAllByUser(userId) {
+        const [rows] = await db.query('SELECT * FROM articulos WHERE usuarios_id = ?', [userId]);
+        return rows;
+    }
 
-    const articulos = rows.map((row) => ({
-        ...row,
-        provincia: getProvinciaFromCp(row.cp),
-        fotos,
-    }));
+    static async getRecientes() {
+        const [rows] = await db.query('SELECT * FROM articulos ORDER BY created_at DESC LIMIT 20');
+        return rows;
+    }
 
-    return {
-        articulos
-    };
-};
+    static async getMasVendidos(limit = 10) {
+        const [rows] = await db.query('SELECT * FROM articulos ORDER BY precio DESC LIMIT ?', [limit]);
+        return rows;
+    }
 
-const getRecientes = async () => {
-    const [rows] = await db.query(
-        `SELECT a.*,f.url_foto FROM articulos a 
-        LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1) 
-         WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
-         ORDER BY a.created_at DESC`
-    );
-    return rows;
-};
+    static async getById(id) {
+        const [articulos] = await db.query('SELECT * FROM articulos WHERE id = ?', [id]);
+        const [fotos] = await db.query('SELECT * FROM articulo_fotos WHERE articulos_id = ?', [id]);
+        return { articulos, fotos };
+    }
 
-const getMasVendidos = async (limite = 10) => {
-    const [rows] = await db.query(
-        `
-        SELECT a.*,
-                COUNT(p.id) AS total_ventas,
-                MAX(u.cp) AS cp, 
-                MAX(f.url_foto) AS url_foto 
-         FROM articulos a 
-         LEFT JOIN articulo_fotos f ON (f.articulos_id=a.id AND f.principal=1)
-         INNER JOIN pedidos p ON p.articulos_id = a.id AND p.estado = 'Completado' 
-         INNER JOIN usuarios u ON u.id = a.usuarios_id 
-         GROUP BY a.id 
-         ORDER BY total_ventas DESC 
-         LIMIT ?
-        `,
-        [limite]
-    );
-
-    const articulos = rows.map((row) => ({
-        ...row,
-        total_ventas: Number(row.total_ventas),
-        precio: Number(row.precio),
-        provincia: getProvinciaFromCp(row.cp),
-    }));
-
-    return {
-        articulos,
-        zona_moda: calcularZonaModa(articulos),
-    };
-};
-
-const create = async (data) => {
-    const {
-        usuarios_id,
-        titulo,
-        descripcion,
-        categorias_id,
-        precio,
-        estado_conservacion_id,
-        estado_articulo_id,
-    } = data;
-
-    const [result] = await db.query(
-        `INSERT INTO articulos
-        (
-            usuarios_id,
-            titulo,
-            descripcion,
-            categorias_id,
-            precio,
-            estado_conservacion_id,
-            estado_articulo_id
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-            usuarios_id,
-            titulo,
-            descripcion,
-            categorias_id,
-            precio,
-            estado_conservacion_id,
-            estado_articulo_id,
-        ]
-    );
-
-    return { id: result.insertId };
-};
-
-const createWithFotos = async (data, fotos) => {
-    const {
-        usuarios_id,
-        titulo,
-        descripcion,
-        categorias_id,
-        precio,
-        estado_conservacion_id,
-        estado_articulo_id,
-    } = data;
-
-    const connection = await db.getConnection();
-
-    try {
-        await connection.beginTransaction();
-
-        const [result] = await connection.query(
-            `INSERT INTO articulos
-            (
-                usuarios_id,
-                titulo,
-                descripcion,
-                categorias_id,
-                precio,
-                estado_conservacion_id,
-                estado_articulo_id
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [
-                usuarios_id,
-                titulo,
-                descripcion,
-                categorias_id,
-                precio,
-                estado_conservacion_id,
-                estado_articulo_id,
-            ]
+    static async create(datos) {
+        const { usuarios_id, titulo, descripcion, categories_id, precio, estado_conservacion_id, estado_articulo_id } = datos;
+        const [result] = await db.query(
+            'INSERT INTO articulos (usuarios_id, titulo, descripcion, categorias_id, precio, estado_conservacion_id, estado_articulo_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [usuarios_id, titulo, descripcion, categories_id, precio, estado_conservacion_id, estado_articulo_id]
         );
-
-        const articuloId = result.insertId;
-        const fotosInsertadas = [];
-
-        for (const foto of fotos) {
-            const [fotoResult] = await connection.query(
-                `INSERT INTO articulo_fotos
-                (url_foto, principal, articulos_id)
-                VALUES (?, ?, ?)`,
-                [foto.url_foto, foto.principal, articuloId]
-            );
-
-            fotosInsertadas.push({
-                id: fotoResult.insertId,
-                url_foto: foto.url_foto,
-                principal: foto.principal,
-            });
-        }
-
-        await connection.commit();
-
-        return { id: articuloId, fotos: fotosInsertadas };
-    } catch (error) {
-        await connection.rollback();
-        throw error;
-    } finally {
-        connection.release();
+        return { id: result.insertId };
     }
-};
 
-const update = async (id, data) => {
-    const {
-        usuarios_id,
-        titulo,
-        descripcion,
-        categorias_id,
-        precio,
-        estado_conservacion_id,
-        estado_articulo_id,
-    } = data;
+    static async createWithFotos(datosArticulo, listaFotos) {
+        const resultado = await this.create(datosArticulo);
+        const fotosGuardadas = [];
+        for (const foto of listaFotos) {
+            const [resultFoto] = await db.query(
+                'INSERT INTO articulo_fotos (url_foto, principal, articulos_id) VALUES (?, ?, ?)',
+                [foto.url_foto, foto.principal, resultado.id]
+            );
+            fotosGuardadas.push({ id: resultFoto.insertId });
+        }
+        return { id: resultado.id, fotos: fotosGuardadas };
+    }
+}
 
-    const [result] = await db.query(
-        `UPDATE articulos
-         SET
-            usuarios_id = ?,
-            titulo = ?,
-            descripcion = ?,
-            categorias_id = ?,
-            precio = ?,
-            estado_conservacion_id = ?,
-            estado_articulo_id = ?,
-            updated_at = NOW()
-         WHERE id = ?`,
-        [
-            usuarios_id,
-            titulo,
-            descripcion,
-            categorias_id,
-            precio,
-            estado_conservacion_id,
-            estado_articulo_id,
-            id,
-        ]
-    );
-
-    return result.affectedRows > 0;
-};
-
-const updateEstadoById = async (id) => {
-    const [result] = await db.query(
-        `UPDATE articulos SET estado_articulo_id='Vendido', updated_at=NOW() WHERE id = ? `,
-        [id]
-    );
-
-    return result.affectedRows > 0;
-};
-
-const deleteById = async (id) => {
-    const [result] = await db.query(
-        `UPDATE articulos SET estado_articulo_id='Retirado', updated_at=NOW() WHERE id = ? `,
-        [id]
-    );
-
-    return result.affectedRows > 0;
-};
-
-const countPublicadosByUsuarioId = async (usuarioId) => {
-    const [rows] = await db.query(
-        `SELECT COUNT(*) AS total
-         FROM articulos
-         WHERE usuarios_id = ? AND estado_articulo_id = 'Publicado'`,
-        [usuarioId]
-    );
-
-    return {
-        usuario_id: usuarioId,
-        total_publicados: Number(rows[0].total),
-    };
-};
-
-module.exports = {
-    getAll,
-    getAllByUser,
-    getById,
-    getRecientes,
-    getMasVendidos,
-    create,
-    createWithFotos,
-    update,
-    updateEstadoById,
-    deleteById,
-    countPublicadosByUsuarioId,
-};
+module.exports = ArticuloModel;

@@ -42,7 +42,10 @@ const getAll = async () => {
 };
 
 const getById = async (id) => {
-    const result = await db.query(`SELECT * FROM usuarios WHERE id = ? AND estado = 1`, [id]);
+    const result = await db.query(
+        `SELECT * FROM usuarios WHERE id = ?`,
+        [id]
+    );
     return omitPassword(result[0][0]);
 };
 

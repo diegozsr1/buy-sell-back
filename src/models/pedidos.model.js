@@ -102,9 +102,38 @@ const createWithConversacion = async (data) => {
 
         const pedidoId = pedidoResult.insertId;
 
+        const [[articulo]] = await connection.query(
+          `SELECT a.titulo,
+            a.usuarios_id
+            FROM articulos a
+            WHERE a.id = ?`,
+            [articulos_id]
+        );
+
         await connection.query(
             'INSERT INTO conversaciones (pedidos_id) VALUES (?)',
             [pedidoId]
+        );
+
+        await connection.query(
+           `INSERT INTO notificaciones
+           (
+           usuarios_id,
+           articulos_id,
+           tipo,
+           titulo,
+           mensaje,
+           redirect_url
+           )
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+          articulo.usuarios_id,
+          articulos_id,
+          'purchase',
+          'Has vendido un artículo',
+          `Han comprado tu artículo "${articulo.titulo}"`,
+          '/user/panel/sales'
+          ]
         );
 
         await connection.commit();

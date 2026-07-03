@@ -1,4 +1,6 @@
+const NotificacionModel = require('../models/notificaciones.model.js');
 const PedidoModel = require('../models/pedidos.model.js');
+const ArticuloModel = require('../models/articulos.model.js');
 const UsuarioModel = require('../models/usuarios.model.js');
 const { sendEmail } = require('../services/email.service.js');
 const {
@@ -66,6 +68,15 @@ const createPedido = async (req, res) => {
     try {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
         const resultado = await PedidoModel.createWithConversacion(datosValidados);
+        const articulo = await ArticuloModel.getById(datosValidados.articulos_id);
+        console.log('ARTICULO:', articulo);
+        await NotificacionModel.create({
+        usuarios_id: articulo.usuarios_id, 
+        articulos_id: datosValidados.articulos_id,
+        tipo: 'venta',
+        titulo: 'Nueva venta',
+        mensaje: `Han comprado tu artículo`,
+});
 
         try {
             const comprador = await UsuarioModel.getById(datosValidados.comprador_id);
