@@ -62,6 +62,23 @@ const getPedidoByIdTodosDatos = async (req, res) => {
     }
 };
 
+const getLastPedidoByArticleId = async (req, res) => {
+    try {
+        const { articleId } = req.params;
+        const resultado = await PedidoModel.getLastByArticleId(articleId);
+
+        if (!resultado) {
+            return res.status(404).json({ mensaje: 'Pedido no encontrado' });
+        }
+
+        res.json(resultado);
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al consultar los datos' });
+    }
+};
+
 const createPedido = async (req, res) => {
     try {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
@@ -106,6 +123,23 @@ const updatePedido = async (req, res) => {
     } catch (error) {
         const validationResponse = handleValidationError(error, res);
         if (validationResponse) return validationResponse;
+        return res.status(500).json({ error: 'Ha habido un error al actualizar el pedido' });
+    }
+};
+
+const updateEstadoPedido = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(id);
+        console.log(req.body);
+        const actualizado = await PedidoModel.updatePedido(id, req.body);
+        console.log('irene');
+        if (!actualizado) {
+            return res.status(404).json({ mensaje: 'Pedido no encontrado' });
+        }
+
+        res.json({ mensaje: 'Pedido actualizado correctamente' });
+    } catch (error) {
         return res.status(500).json({ error: 'Ha habido un error al actualizar el pedido' });
     }
 };
@@ -157,7 +191,9 @@ module.exports = {
     getPedidoByIdTodosDatos,
     getVentasByUsuario,
     getPedidosByUsuario,
+    getLastPedidoByArticleId,
     createPedido,
     updatePedido,
+    updateEstadoPedido,
     deletePedido,
 };
