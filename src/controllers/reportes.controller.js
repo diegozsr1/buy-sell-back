@@ -21,6 +21,11 @@ const truncarMensaje = (texto, max = 255) => {
     return `${texto.slice(0, max - 3)}...`;
 };
 
+const ESTADOS_RESUELTOS = ['Aceptado', 'Descartado'];
+
+const esEstadoResuelto = (estado) =>
+    ESTADOS_RESUELTOS.some((item) => item.toLowerCase() === String(estado ?? '').toLowerCase());
+
 const crearNotificacionesReporte = async (datos, reporteId) => {
     if (!datos.articulos_id) return;
 
@@ -59,6 +64,59 @@ const crearNotificacionesReporte = async (datos, reporteId) => {
             })
         )
     );
+};
+
+const crearNotificacionResolucionReporte = async (reporteAnterior, datos, reporteId) => {
+    if (!esEstadoResuelto(datos.estado)) return;
+    if (esEstadoResuelto(reporteAnterior.estado)) return;
+    if (!datos.articulos_id) return;
+
+    const articulo = await ArticuloModel.getById(datos.articulos_id);
+    const tituloArticulo = articulo.articulos[0]?.titulo ?? 'Artículo reportado';
+    const resolucion = datos.resultado_reporte?.trim();
+    const aceptado = datos.estado.toLowerCase() === 'aceptado';
+    const titulo = aceptado ? 'Resolución: reporte aceptado' : 'Resolución: reporte descartado';
+
+    const mensajeVendedor = aceptado
+        ? resolucion
+            ? `Se aceptó el reporte sobre "${tituloArticulo}". Resolución: ${resolucion}`
+            : `Se aceptó el reporte sobre "${tituloArticulo}". Se han aplicado las medidas correspondientes.`
+        : resolucion
+            ? `Se descartó el reporte sobre "${tituloArticulo}". Resolución: ${resolucion}`
+            : `Se descartó el reporte sobre "${tituloArticulo}". Tu artículo puede continuar publicado.`;
+
+    if (datos.usuario_reportado_id) {
+        await NotificacionModel.create({
+            usuarios_id: datos.usuario_reportado_id,
+            articulos_id: datos.articulos_id,
+            tipo: 'moderation',
+            titulo,
+            mensaje: truncarMensaje(mensajeVendedor),
+            redirect_url: '/user/panel/sales',
+        });
+    }
+
+    if (
+        datos.usuario_reportante_id &&
+        datos.usuario_reportante_id !== datos.usuario_reportado_id
+    ) {
+        const mensajeReportante = aceptado
+            ? resolucion
+                ? `Tu reporte #${reporteId} sobre "${tituloArticulo}" fue aceptado. ${resolucion}`
+                : `Tu reporte #${reporteId} sobre "${tituloArticulo}" fue aceptado.`
+            : resolucion
+                ? `Tu reporte #${reporteId} sobre "${tituloArticulo}" fue descartado. ${resolucion}`
+                : `Tu reporte #${reporteId} sobre "${tituloArticulo}" fue descartado.`;
+
+        await NotificacionModel.create({
+            usuarios_id: datos.usuario_reportante_id,
+            articulos_id: datos.articulos_id,
+            tipo: 'moderation',
+            titulo,
+            mensaje: truncarMensaje(mensajeReportante),
+            redirect_url: '/user/panel/my-purchases',
+        });
+    }
 };
 
 const getReportes = async (req, res) => {
@@ -113,10 +171,18 @@ const updateReporte = async (req, res) => {
     try {
         const { id } = await reporteIdSchema.validate(req.params, validationOptions);
         const datosValidados = await reporteSchema.validate(req.body, validationOptions);
-        const actualizado = await ReporteModel.update(id, datosValidados);
+        const reporteAnterior = await ReporteModel.getById(id);
 
-        if (!actualizado) {
+        if (!reporteAnterior) {
             return res.status(404).json({ mensaje: 'Reporte no encontrado' });
+        }
+
+        await ReporteModel.update(id, datosValidados);
+
+        try {
+            await crearNotificacionResolucionReporte(reporteAnterior, datosValidados, id);
+        } catch (notificacionError) {
+            console.error('Error al crear notificación de resolución del reporte:', notificacionError);
         }
 
         res.json({ mensaje: 'Reporte actualizado correctamente' });
