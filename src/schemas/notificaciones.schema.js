@@ -11,6 +11,21 @@ const notificacionUsuarioIdSchema = yup.object({
         .transform((value, originalValue) => Number(originalValue)),
 });
 
+const notificacionIdParamsSchema = yup.object({
+    usuarioId: yup
+        .number()
+        .integer('El id debe ser un número entero')
+        .positive('El id debe ser positivo')
+        .required('El id es obligatorio')
+        .transform((value, originalValue) => Number(originalValue)),
+    notificacionId: yup
+        .number()
+        .integer('El id de la notificación debe ser un número entero')
+        .positive('El id de la notificación debe ser positivo')
+        .required('El id de la notificación es obligatorio')
+        .transform((value, originalValue) => Number(originalValue)),
+});
+
 const notificacionCreateSchema = yup.object({
     usuarios_id: yup
         .number()
@@ -41,5 +56,6 @@ const notificacionCreateSchema = yup.object({
 module.exports = {
     TIPOS_NOTIFICACION,
     notificacionUsuarioIdSchema,
+    notificacionIdParamsSchema,
     notificacionCreateSchema,
 };

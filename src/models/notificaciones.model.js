@@ -3,10 +3,10 @@ const { notificacionCreateSchema } = require('../schemas/notificaciones.schema.j
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
-const getByUsuarioId = async (usuarioId) => {
+const getByUsuarioId = async (usuarioId, limit = 15) => {
     const [rows] = await db.query(
-        'SELECT * FROM notificaciones WHERE usuarios_id = ? ORDER BY created_at DESC',
-        [usuarioId]
+        'SELECT * FROM notificaciones WHERE usuarios_id = ? ORDER BY created_at DESC LIMIT ?',
+        [usuarioId, limit]
     );
     return rows;
 };
@@ -23,6 +23,14 @@ const marcarComoLeidasByUsuarioId = async (usuarioId) => {
     const [result] = await db.query(
         'UPDATE notificaciones SET leida = 1 WHERE usuarios_id = ? AND leida = 0',
         [usuarioId]
+    );
+    return result.affectedRows;
+};
+
+const marcarComoLeidaById = async (usuarioId, notificacionId) => {
+    const [result] = await db.query(
+        'UPDATE notificaciones SET leida = 1 WHERE id = ? AND usuarios_id = ? AND leida = 0',
+        [notificacionId, usuarioId]
     );
     return result.affectedRows;
 };
@@ -45,5 +53,6 @@ module.exports = {
     getByUsuarioId,
     countSinLeerByUsuarioId,
     marcarComoLeidasByUsuarioId,
+    marcarComoLeidaById,
     create,
 };

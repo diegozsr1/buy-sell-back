@@ -95,7 +95,7 @@ const createPedido = async (req, res) => {
                 articulos_id: datosValidados.articulos_id,
                 tipo: 'sale',
                 titulo: 'Nueva venta',
-                mensaje: `Han comprado tu artículo ${articuloVendido.titulo} de ${comprador.nombre}`,
+                mensaje: `${comprador.nombre} ha comprado tu artículo: ${articuloVendido.titulo}!`,
             });
         }
 

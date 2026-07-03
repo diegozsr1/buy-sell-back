@@ -1,6 +1,6 @@
 const NotificacionModel = require('../models/notificaciones.model.js');
 const { isAuthBypassEnabled } = require('../middleware/auth.middleware.js');
-const { notificacionUsuarioIdSchema } = require('../schemas/notificaciones.schema.js');
+const { notificacionUsuarioIdSchema, notificacionIdParamsSchema } = require('../schemas/notificaciones.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
 
@@ -83,8 +83,37 @@ const marcarComoLeidas = async (req, res) => {
     }
 };
 
+const marcarComoLeida = async (req, res) => {
+    try {
+        const { usuarioId, notificacionId } = await notificacionIdParamsSchema.validate(
+            req.params,
+            validationOptions
+        );
+        assertUsuarioAutorizado(req, usuarioId);
+
+        const actualizada = await NotificacionModel.marcarComoLeidaById(usuarioId, notificacionId);
+
+        if (!actualizada) {
+            return res.status(404).json({ error: 'Notificación no encontrada o ya leída' });
+        }
+
+        const sinLeer = await NotificacionModel.countSinLeerByUsuarioId(usuarioId);
+        res.json({ message: 'Notificación marcada como leída', sinLeer });
+    } catch (error) {
+        const validationResponse = handleValidationError(error, res);
+        if (validationResponse) return validationResponse;
+
+        if (error.statusCode === 403) {
+            return res.status(403).json({ error: error.message });
+        }
+
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     obtenerNotificaciones,
     contarSinLeer,
     marcarComoLeidas,
+    marcarComoLeida,
 };
