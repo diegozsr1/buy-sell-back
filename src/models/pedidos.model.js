@@ -73,6 +73,18 @@ const getByCompradorId = async (usuarioId) => {
 
 };
 
+const getLastByArticleId = async (articleId) => {
+    const [rows] = await db.query(
+        `SELECT * 
+            FROM mydb.pedidos 
+            WHERE articulos_id=?
+            ORDER BY id DESC
+            LIMIT 1`,
+        [articleId]
+    );
+    return rows[0];
+};
+
 const create = async (data) => {
     const { comprador_id, articulos_id, estado, direccion_envio } = data;
 
@@ -134,6 +146,20 @@ const update = async (id, data) => {
     return result.affectedRows > 0;
 };
 
+const updatePedido = async (id, data) => {
+    const { estado} = data;
+
+    const [result] = await db.query(
+        `UPDATE pedidos 
+            SET estado = ?, 
+            updated_at = NOW() 
+             WHERE id = ?`,
+        [estado, id]
+    );
+
+    return result.affectedRows > 0;
+};
+
 const deleteById = async (id) => {
     const [result] = await db.query(
         'DELETE FROM pedidos WHERE id = ?',
@@ -165,9 +191,11 @@ module.exports = {
     getById,
     getAllDataById,
     getByCompradorId,
+    getLastByArticleId,
     create,
     createWithConversacion,
     update,
+    updatePedido,
     deleteById,
     getVentasByUsuarioId,
 };

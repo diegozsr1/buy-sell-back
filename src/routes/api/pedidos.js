@@ -8,6 +8,8 @@ const {
     updatePedido,
     deletePedido,
     getPedidoByIdTodosDatos,
+    getLastPedidoByArticleId,
+    updateEstadoPedido,
 } = require('../../controllers/pedidos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -169,6 +171,10 @@ router.get('/usuario/:usuarioId', checkToken, getPedidosByUsuario);
 router.get('/:id', checkToken, getPedidoById);
 
 /*TODO: swagger */
+/*Devuelve los datos del último pedido de un artículo concreto */
+router.get('/article/:articleId',getLastPedidoByArticleId);
+
+/*TODO: swagger */
 /*Devuelve todos los datos de un pedido por id, los datos del pedido, del vendedor y del artículo comprado*/
 router.get('/:id/todos-datos', checkToken, getPedidoByIdTodosDatos);
 
@@ -257,6 +263,10 @@ router.post('/', checkToken, createPedido);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put('/:id', checkToken, updatePedido);
+
+/*TODO: swagger */
+/*Actualiza el estado de un pedido por su id */
+router.put('/:id/actualiza-estado', checkToken, updateEstadoPedido);
 
 /**
  * @swagger
