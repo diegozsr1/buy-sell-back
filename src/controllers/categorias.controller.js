@@ -128,10 +128,6 @@ const deleteCategoria = async (req, res) => {
             });
         }
 
-        if (categoriaExistente.icono) {
-            await deleteIcono(categoriaExistente.icono);
-        }
-
         await CategoriaModel.deleteById(id);
 
         res.status(200).json({

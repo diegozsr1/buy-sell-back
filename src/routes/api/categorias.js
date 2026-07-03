@@ -206,7 +206,7 @@ router.put('/:id', checkToken, checkAdmin, handleIconoUpload, updateCategoria);
  * @swagger
  * /api/categorias/{id}:
  *   delete:
- *     summary: Eliminar una categoría
+ *     summary: Eliminar una categoría (borrado lógico)
  *     tags: [Categorías]
  *     security:
  *       - bearerAuth: []

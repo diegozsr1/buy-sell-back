@@ -16,6 +16,12 @@ module.exports = {
                 example: 12,
                 description: 'Número de artículos asociados a la categoría',
             },
+            estado: {
+                type: 'integer',
+                enum: [0, 1],
+                example: 1,
+                description: '1 = activa, 0 = eliminada (borrado lógico)',
+            },
         },
     },
     CategoriaRequest: {

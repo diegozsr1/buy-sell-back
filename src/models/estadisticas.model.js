@@ -78,7 +78,7 @@ const getDashboard = async (temporalidad) => {
       anterior.hasta,
     ),
     db
-      .query(`SELECT COUNT(*) AS total FROM categorias`)
+      .query(`SELECT COUNT(*) AS total FROM categorias WHERE estado = 1`)
       .then(([rows]) => Number(rows[0].total)),
     countEnRango(
       `SELECT COUNT(*) AS total FROM articulos

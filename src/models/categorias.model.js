@@ -5,6 +5,7 @@ const getAll = async () => {
         `SELECT c.*, COUNT(a.id) AS total_articulos
          FROM categorias c
          LEFT JOIN articulos a ON a.categorias_id = c.id
+         WHERE c.estado = 1
          GROUP BY c.id
          ORDER BY c.nombre`
     );
@@ -17,7 +18,7 @@ const getAll = async () => {
 
 const getById = async (id) => {
     const [rows] = await db.query(
-        'SELECT * FROM categorias WHERE id = ?',
+        'SELECT * FROM categorias WHERE id = ? AND estado = 1',
         [id]
     );
     return rows[0];
@@ -41,7 +42,7 @@ const update = async (id, data) => {
     const [result] = await db.query(
         `UPDATE categorias
          SET nombre = ?, descripcion = ?, icono = ?
-         WHERE id = ?`,
+         WHERE id = ? AND estado = 1`,
         [nombre, descripcion, icono ?? null, id]
     );
 
@@ -50,7 +51,7 @@ const update = async (id, data) => {
 
 const deleteById = async (id) => {
     const [result] = await db.query(
-        'DELETE FROM categorias WHERE id = ?',
+        'UPDATE categorias SET estado = 0 WHERE id = ? AND estado = 1',
         [id]
     );
 
