@@ -31,8 +31,6 @@ const handleIconoUpload = (req, res, next) => {
  *   get:
  *     summary: Listar categorías
  *     tags: [Categorías]
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de categorías
@@ -49,7 +47,7 @@ const handleIconoUpload = (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/', checkToken, getCategorias);
+router.get('/', getCategorias);
 
 /**
  * @swagger
@@ -57,8 +55,6 @@ router.get('/', checkToken, getCategorias);
  *   get:
  *     summary: Obtener una categoría por ID
  *     tags: [Categorías]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -87,7 +83,7 @@ router.get('/', checkToken, getCategorias);
  *             schema:
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
-router.get('/:id', checkToken, checkAdmin, getCategoriaById);
+router.get('/:id', getCategoriaById);
 
 /**
  * @swagger
@@ -95,8 +91,6 @@ router.get('/:id', checkToken, checkAdmin, getCategoriaById);
  *   post:
  *     summary: Crear una categoría
  *     tags: [Categorías]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
