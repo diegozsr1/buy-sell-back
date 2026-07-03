@@ -46,6 +46,17 @@ const getById = async (id) => {
     return omitPassword(result[0][0]);
 };
 
+const getIdsByRoles = async (roles) => {
+    if (!roles?.length) return [];
+
+    const placeholders = roles.map(() => '?').join(', ');
+    const [rows] = await db.query(
+        `SELECT id FROM usuarios WHERE roles_id IN (${placeholders}) AND estado = 1 AND bloqueado = 0`,
+        roles
+    );
+    return rows.map((row) => row.id);
+};
+
 const countAll = async () => {
     const result = await db.query(`SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1`);
     return result[0][0].total;
@@ -214,6 +225,7 @@ const remove = async (id) => {
 module.exports = {
     getAll,
     getById,
+    getIdsByRoles,
     countAll,
     countByRol,
     countByBloqueado,

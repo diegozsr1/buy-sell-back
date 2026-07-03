@@ -1,4 +1,7 @@
 const ReporteModel = require('../models/reportes.model.js');
+const NotificacionModel = require('../models/notificaciones.model.js');
+const ArticuloModel = require('../models/articulos.model.js');
+const UsuarioModel = require('../models/usuarios.model.js');
 const { reporteIdSchema, reporteSchema } = require('../schemas/reportes.schema.js');
 
 const validationOptions = { abortEarly: false, stripUnknown: true };
@@ -11,6 +14,51 @@ const handleValidationError = (error, res) => {
         });
     }
     return null;
+};
+
+const truncarMensaje = (texto, max = 255) => {
+    if (!texto || texto.length <= max) return texto;
+    return `${texto.slice(0, max - 3)}...`;
+};
+
+const crearNotificacionesReporte = async (datos, reporteId) => {
+    if (!datos.articulos_id) return;
+
+    const articulo = await ArticuloModel.getById(datos.articulos_id);
+    const tituloArticulo = articulo.articulos[0]?.titulo ?? 'Artículo reportado';
+
+    if (
+        datos.usuario_reportado_id &&
+        datos.usuario_reportado_id !== datos.usuario_reportante_id
+    ) {
+        await NotificacionModel.create({
+            usuarios_id: datos.usuario_reportado_id,
+            articulos_id: datos.articulos_id,
+            tipo: 'moderation',
+            titulo: 'Artículo reportado',
+            mensaje: truncarMensaje(
+                `Tu artículo "${tituloArticulo}" ha sido reportado y está en revisión.`
+            ),
+            redirect_url: '/user/panel/sales',
+        });
+    }
+
+    const moderadores = await UsuarioModel.getIdsByRoles(['Moderador', 'Administrador']);
+
+    await Promise.all(
+        moderadores.map((moderadorId) =>
+            NotificacionModel.create({
+                usuarios_id: moderadorId,
+                articulos_id: datos.articulos_id,
+                tipo: 'moderation',
+                titulo: 'Nuevo reporte pendiente',
+                mensaje: truncarMensaje(
+                    `Reporte #${reporteId} sobre "${tituloArticulo}": ${datos.motivo}`
+                ),
+                redirect_url: `/moderator/panel/incident/${datos.articulos_id}`,
+            })
+        )
+    );
 };
 
 const getReportes = async (req, res) => {
@@ -43,6 +91,12 @@ const createReporte = async (req, res) => {
     try {
         const datosValidados = await reporteSchema.validate(req.body, validationOptions);
         const resultado = await ReporteModel.create(datosValidados);
+
+        try {
+            await crearNotificacionesReporte(datosValidados, resultado.id);
+        } catch (notificacionError) {
+            console.error('Error al crear notificaciones del reporte:', notificacionError);
+        }
 
         res.status(201).json({
             id: resultado.id,
