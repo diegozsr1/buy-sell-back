@@ -1,9 +1,13 @@
-const router = require('express').Router();
-const controller = require('../../controllers/notificaciones.controller');
-const { checkToken } = require('../../middleware/auth.middleware');
+const router = require("express").Router();
+const {
+  obtenerNotificaciones,
+  contarSinLeer,
+  marcarComoLeidas,
+} = require("../../controllers/notificaciones.controller");
+const { checkToken } = require("../../middleware/auth.middleware");
 
-router.get('/usuario/:usuarioId', checkToken, controller.obtenerNotificaciones);
-router.get('/usuario/:usuarioId/sin-leer', checkToken, controller.contarSinLeer);
-router.put('/usuario/:usuarioId/leer', checkToken, controller.marcarComoLeidas);
+router.get("/usuario/:usuarioId", checkToken, obtenerNotificaciones);
+router.get("/usuario/:usuarioId/sin-leer", checkToken, contarSinLeer);
+router.put("/usuario/:usuarioId/leer", checkToken, marcarComoLeidas);
 
 module.exports = router;

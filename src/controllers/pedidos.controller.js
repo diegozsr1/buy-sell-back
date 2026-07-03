@@ -70,20 +70,19 @@ const createPedido = async (req, res) => {
         const resultado = await PedidoModel.createWithConversacion(datosValidados);
         const articulo = await ArticuloModel.getById(datosValidados.articulos_id);
         const articuloVendido = articulo.articulos[0];
+        const comprador = await UsuarioModel.getById(datosValidados.comprador_id);
 
-        if (articuloVendido) {
-            const usuario = await UsuarioModel.getById(datosValidados.comprador_id);
+        if (articuloVendido && comprador) {
             await NotificacionModel.create({
                 usuarios_id: articuloVendido.usuarios_id,
                 articulos_id: datosValidados.articulos_id,
                 tipo: 'sale',
                 titulo: 'Nueva venta',
-                mensaje: `Han comprado tu artículo ${articuloVendido.titulo} de ${usuario.nombre}`,
+                mensaje: `Han comprado tu artículo ${articuloVendido.titulo} de ${comprador.nombre}`,
             });
         }
 
         try {
-            const comprador = await UsuarioModel.getById(datosValidados.comprador_id);
             if (comprador?.email) {
                 await sendEmail({
                     to: comprador.email,

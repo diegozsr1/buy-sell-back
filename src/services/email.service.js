@@ -1,5 +1,16 @@
 const transporter = require('../config/email.js');
 
+const buildFromAddress = () => {
+    const address = process.env.SMTP_FROM || process.env.SMTP_USER;
+    const name = process.env.SMTP_FROM_NAME || 'Buy & Sell';
+
+    if (!address) {
+        throw new Error('SMTP_FROM o SMTP_USER deben estar configurados');
+    }
+
+    return { name, address };
+};
+
 /**
  * Envía un correo electrónico vía SMTP (Google).
  *
@@ -15,10 +26,8 @@ const sendEmail = async ({ to, subject, body, isHtml = true }) => {
         throw new Error('to, subject y body son obligatorios');
     }
 
-    const from = process.env.SMTP_FROM || process.env.SMTP_USER;
-
     const mailOptions = {
-        from,
+        from: buildFromAddress(),
         to,
         subject,
         ...(isHtml ? { html: body } : { text: body }),
