@@ -31,7 +31,7 @@ const login = async (req, res) => {
         }
 
         if (usuario.blocked) {
-            return res.status(403).json({ error: usuario.error });
+            return res.status(423).json({ error: usuario.error });
         }
 
         const passwordValida = await bcrypt.compare(password, usuario.password);

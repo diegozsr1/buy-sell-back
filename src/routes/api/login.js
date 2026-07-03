@@ -42,8 +42,8 @@ const { login } = require('../../controllers/login.controller');
  *               $ref: '#/components/schemas/ErrorResponse'
  *             example:
  *               error: Credenciales inválidas
- *       403:
- *         description: Usuario bloqueado
+ *       423:
+ *         description: Usuario bloqueado temporalmente
  *         content:
  *           application/json:
  *             schema:

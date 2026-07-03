@@ -302,6 +302,19 @@ router.get('/', checkToken, getUsuarios);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
+ *       409:
+ *         description: Email o nombre de usuario ya registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Ese email ya está registrado
+ *                 campo:
+ *                   type: string
+ *                   enum: [username, email]
  *       500:
  *         description: Error interno del servidor
  *         content:
