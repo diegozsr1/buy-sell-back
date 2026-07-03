@@ -12,5 +12,7 @@ router.use('/pedidos', require('./api/pedidos'));
 router.use('/reportes', require('./api/reportes'));
 router.use('/valoraciones', require('./api/valoraciones'));
 router.use('/estadisticas', require('./api/estadisticas'));
+router.use('/notificaciones', require('./api/notificaciones.routes'));
+
 
 module.exports = router;

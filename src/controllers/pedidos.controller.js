@@ -1,4 +1,6 @@
+const NotificacionModel = require('../models/notificaciones.model.js');
 const PedidoModel = require('../models/pedidos.model.js');
+const ArticuloModel = require('../models/articulos.model.js');
 const UsuarioModel = require('../models/usuarios.model.js');
 const { sendEmail } = require('../services/email.service.js');
 const {
@@ -83,6 +85,18 @@ const createPedido = async (req, res) => {
     try {
         const datosValidados = await pedidoSchema.validate(req.body, validationOptions);
         const resultado = await PedidoModel.createWithConversacion(datosValidados);
+        const articulo = await ArticuloModel.getById(datosValidados.articulos_id);
+        console.log("articulo");
+        console.log(articulo.articulos[0]);
+        
+        const usuario = await UsuarioModel.getById(datosValidados.comprador_id);    
+        await NotificacionModel.create({
+            usuarios_id:articulo.articulos[0].usuarios_id,
+            articulos_id: articulo.id,
+            tipo: 'sale',
+            titulo: 'Nueva venta',
+            mensaje: `Han comprado tu artículo ${articulo.articulos[0].titulo} de ${usuario.nombre}`,
+        });
 
         try {
             const comprador = await UsuarioModel.getById(datosValidados.comprador_id);
@@ -103,6 +117,8 @@ const createPedido = async (req, res) => {
             mensaje: 'Pedido creado correctamente',
         });
     } catch (error) {
+        
+        
         const validationResponse = handleValidationError(error, res);
         if (validationResponse) return validationResponse;
         return res.status(500).json({ error: 'Ha habido un error al crear el pedido' });
