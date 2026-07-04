@@ -67,6 +67,15 @@ const articulosExplorarQuerySchema = yup.object({
             'ordenar debe ser relevancia, precio-asc, precio-desc o recientes'
         )
         .default('relevancia'),
+    usuario_id: yup
+        .number()
+        .min(0, 'usuario Id no puede ser negativo')
+        .optional()
+        .transform((value, originalValue) =>
+            originalValue === '' || originalValue === undefined || originalValue === null
+                ? undefined
+                : Number(originalValue)
+        ),
 });
 
 const articuloConFotosSchema = yup.object({
