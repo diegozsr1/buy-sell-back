@@ -43,6 +43,7 @@ const normalizarFiltros = (query = {}) => {
         estadosConservacion: parseEstadosConservacion(query.estado_conservacion),
         ubicacion: query.ubicacion?.trim() || '',
         ordenar,
+        usuario_id: Number(query.usuario_id) || null,
     };
 };
 
@@ -83,6 +84,12 @@ const buildWhere = (filtros) => {
         const terminoUbicacion = `%${filtros.ubicacion}%`;
         params.push(terminoUbicacion, terminoUbicacion);
     }
+
+    if (filtros.usuario_id) {
+        condiciones.push('a.usuarios_id != ?');
+        params.push(filtros.usuario_id);
+    }
+
 
     return {
         sql: condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '',
