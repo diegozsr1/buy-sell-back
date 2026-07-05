@@ -7,6 +7,7 @@ const {
     deleteFavorito,
     getFavoritosByUser,
     getFavoritosUserByUser,
+    deleteFavoritoByArticleIdAndUserId,
 } = require('../../controllers/favoritos.controller');
 const { checkToken } = require('../../middleware/auth.middleware');
 
@@ -215,5 +216,9 @@ router.put('/:id', checkToken, updateFavorito);
  *               $ref: '#/components/schemas/MensajeErrorResponse'
  */
 router.delete('/:id', checkToken, deleteFavorito);
+
+/*TODO: Swagger */
+/*Elimina un favorito por el id del artículo y el id del usuario */
+router.delete('/articulo/:articleId/usuario/:userId', checkToken, deleteFavoritoByArticleIdAndUserId);
 
 module.exports = router;

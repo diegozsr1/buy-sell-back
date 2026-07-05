@@ -102,6 +102,15 @@ const deleteById = async (id) => {
     return result.affectedRows > 0;
 };
 
+const deleteByArticleIdAndUserId = async (articleId,userId) => {
+    const [result] = await db.query(
+        'DELETE FROM favoritos WHERE articulos_id=? AND usuarios_id=?',
+        [articleId,userId]
+    );
+
+    return result.affectedRows > 0;
+};
+
 module.exports = {
     getAll,
     getAllByUser,
@@ -110,4 +119,5 @@ module.exports = {
     create,
     update,
     deleteById,
+    deleteByArticleIdAndUserId
 };
