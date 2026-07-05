@@ -148,6 +148,23 @@ const deleteFavorito = async (req, res) => {
     }
 };
 
+const deleteFavoritoByArticleIdAndUserId = async (req, res) => {
+    try {
+        const { articleId,userId } = req.params;
+
+        await FavoritoModel.deleteByArticleIdAndUserId(articleId,userId);
+
+        res.status(200).json({
+            mensaje: 'Favorito eliminado correctamente',
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al eliminar el favorito',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     getFavoritos,
     getFavoritosByUser,
@@ -156,4 +173,5 @@ module.exports = {
     createFavorito,
     updateFavorito,
     deleteFavorito,
+    deleteFavoritoByArticleIdAndUserId
 };
