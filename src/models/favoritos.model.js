@@ -34,7 +34,7 @@ const getAllByUser = async (user_id) => {
 
     const articulos = rows.map((row) => ({
             ...row,
-            provincia: getProvinciaFromCp(row.cp),
+            provincia: (row.cp)?getProvinciaFromCp(row.cp):'',
         }));
     
         return {
