@@ -149,7 +149,6 @@ const updateEstadoPedido = async (req, res) => {
         console.log(id);
         console.log(req.body);
         const actualizado = await PedidoModel.updatePedido(id, req.body);
-        console.log('irene');
         if (!actualizado) {
             return res.status(404).json({ mensaje: 'Pedido no encontrado' });
         }
