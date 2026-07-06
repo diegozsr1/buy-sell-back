@@ -368,7 +368,7 @@ router.get('/', checkToken, getUsuarios);
  *               $ref: '#/components/schemas/ErrorResponse'
  *   put:
  *     summary: Actualizar usuario
- *     description: Actualiza los datos de un usuario existente.
+ *     description: Actualiza parcialmente los datos de un usuario existente. Solo es necesario enviar los campos que se desean modificar.
  *     tags: [Usuarios]
  *     parameters:
  *       - in: path
@@ -384,7 +384,7 @@ router.get('/', checkToken, getUsuarios);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UsuarioRequest'
+ *             $ref: '#/components/schemas/UsuarioUpdateRequest'
  *     responses:
  *       200:
  *         description: Usuario actualizado

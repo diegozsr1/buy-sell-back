@@ -1,7 +1,7 @@
 const db = require('../config/db.js');
 const { getProvinciaFromCp } = require('../utils/codigoPostal.utils.js');
 
-const ESTADOS_VISIBLES = ['Publicado', 'Vendido'];
+const ESTADOS_VISIBLES = ['Publicado', 'Reservado'];
 const ORDEN_VALIDO = ['relevancia', 'precio-asc', 'precio-desc', 'recientes'];
 const POR_PAGINA_DEFAULT = 12;
 const POR_PAGINA_MAX = 50;

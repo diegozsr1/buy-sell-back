@@ -115,6 +115,11 @@ const createWithConversacion = async (data) => {
         const pedidoId = pedidoResult.insertId;
 
         await connection.query(
+            `UPDATE articulos SET estado_articulo_id = 'Reservado', updated_at = NOW() WHERE id = ?`,
+            [articulos_id]
+        );
+
+        await connection.query(
             'INSERT INTO conversaciones (pedidos_id) VALUES (?)',
             [pedidoId]
         );
