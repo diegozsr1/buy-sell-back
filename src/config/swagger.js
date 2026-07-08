@@ -7,9 +7,9 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'MiWallapop API',
+            title: 'Buy & Sell API',
             version: '1.0.0',
-            description: 'Tienda online de compra-venta de artículos',
+            description: 'API para la aplicación de compra-venta de artículos de segunda mano',
         },
         servers: [
             {
