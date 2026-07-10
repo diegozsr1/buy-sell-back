@@ -1,99 +1,342 @@
-# Express Base Application for API Creation
+# Buy&Sell Backend
 
-This is a basic Express application template designed to help you create APIs
-quickly. It includes essential configurations and setup for starting an Express
-server.
+<p align="center">
 
-## Features
+RESTful API developed with Node.js, Express and MySQL for the Buy&Sell marketplace application.
 
-- Basic Express server setup
-- CORS enabled
-- Environment configuration with `.env` support
+</p>
 
-## Getting Started
+<p align="center">
 
-### Prerequisites
+[![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express)](https://expressjs.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?logo=mysql)](https://www.mysql.com/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-orange)](https://jwt.io/)
+[![Swagger](https://img.shields.io/badge/API-Swagger-85EA2D?logo=swagger)](https://swagger.io/)
 
-Ensure you have Node.js and npm installed on your machine. You can download them
-from [Node.js official website](https://nodejs.org/).
+</p>
 
-### Installation
+---
 
-1. **Clone the repository:**
+# Overview
 
-```bash
-git clone https://github.com/mariogiron/express-init-template.git project-name
+The Buy&Sell Backend provides a RESTful API responsible for handling authentication, authorization, product management, user interactions and business logic.
+
+It follows a modular architecture based on controllers, routes and middlewares, allowing the application to scale while keeping responsibilities separated.
+
+The API communicates with a MySQL database and secures protected endpoints using JSON Web Tokens (JWT).
+
+---
+
+# Related Repositories
+
+## Main Project
+
+https://github.com/diegozsr1/buy-sell
+
+## Frontend
+
+https://github.com/diegozsr1/buy-sell-front
+
+---
+
+# Main Features
+
+- REST API
+- JWT Authentication
+- Role-Based Authorization
+- CRUD Product Management
+- Product Images
+- User Profiles
+- Reviews
+- Reports
+- Favourite Products
+- Messaging Support
+- Swagger Documentation
+- Secure Middleware Pipeline
+
+---
+
+# Technology Stack
+
+| Technology | Purpose |
+|------------|----------|
+| Node.js | Runtime |
+| Express | REST API |
+| MySQL | Database |
+| JWT | Authentication |
+| Swagger | API Documentation |
+| Multer / Cloudinary | Image Upload |
+| dotenv | Environment Configuration |
+
+---
+
+# Authentication
+
+Authentication is implemented using JSON Web Tokens.
+
+Workflow:
+
+```text
+User Login
+        │
+        ▼
+Credentials Validation
+        │
+        ▼
+JWT Generation
+        │
+        ▼
+Token returned
+        │
+        ▼
+Protected Requests
+        │
+        ▼
+JWT Middleware Validation
+        │
+        ▼
+Authorized Controller
 ```
 
-2. **Navigate to the project directory:**
+---
 
-```bash
-cd project-name
+# Authorization
+
+Role-based authorization protects administrator and moderator routes.
+
+Supported roles include:
+
+- Administrator
+- Moderator
+- Standard User
+
+Each protected endpoint validates the authenticated user's permissions before executing the request.
+
+---
+
+# API Modules
+
+The API is divided into independent modules.
+
+- Authentication
+- Users
+- Products
+- Images
+- Categories
+- Reviews
+- Reports
+- Favourites
+- Conversations
+- Messages
+
+This modular design simplifies maintenance and future development.
+
+---
+
+# Middlewares
+
+Several middlewares are used throughout the application.
+
+## JWT Middleware
+
+Responsible for:
+
+- Reading Authorization headers.
+- Validating JWT tokens.
+- Extracting authenticated user information.
+
+---
+
+## Role Middleware
+
+Responsible for:
+
+- Checking user roles.
+- Restricting privileged routes.
+- Preventing unauthorized access.
+
+---
+
+## Error Middleware
+
+Centralises server-side error handling to ensure consistent API responses.
+
+---
+
+# Swagger Documentation
+
+The API includes Swagger documentation, allowing developers to explore available endpoints interactively.
+
+Example categories:
+
+- Authentication
+- Products
+- Users
+- Reports
+- Reviews
+- Images
+
+Swagger makes testing and integration considerably easier during development.
+
+---
+
+# Database
+
+The application stores information in MySQL.
+
+Main entities include:
+
+- Users
+- Products
+- Images
+- Categories
+- Reviews
+- Reports
+- Favourite Products
+- Conversations
+- Messages
+
+Relationships are documented in the project's database documentation.
+
+---
+
+# Project Structure
+
+```text
+src/
+
+controllers/
+
+routes/
+
+middlewares/
+
+services/
+
+config/
+
+database/
+
+utils/
+
+swagger/
+
+app.js
+
+server.js
 ```
 
-3. **Install the dependencies:**
+---
+
+# Security
+
+Several security mechanisms are implemented.
+
+- Password hashing
+- JWT Authentication
+- Protected Routes
+- Role Validation
+- Environment Variables
+- Secure Middleware Chain
+
+---
+
+# Installation
+
+Clone repository
+
+```bash
+git clone https://github.com/diegozsr1/buy-sell-back
+```
+
+Install dependencies
 
 ```bash
 npm install
 ```
 
-### Environment Configuration
+Create environment file
 
-Create a `.env` file in the root of the project and configure your environment
-variables. An example `.env` file might look like this:
+```env
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
 
-```
-PORT=3000
-```
+JWT_SECRET=
 
-### Running the Application
-
-#### Start the server
-
-Start the server by running:
-
-```bash
-npm start
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
-The server will start and listen on the port defined in your `.env` file, or
-default to port 3000 if not specified.
-
-#### Development mode
-
-To start the server in development mode with `nodemon`, which will automatically
-restart the server on file changes, run:
+Run development server
 
 ```bash
 npm run dev
 ```
 
-### Available Scripts
+or
 
-- **start**: Runs `node index.js` to start the server.
-- **dev**: Runs `nodemon index.js` to start the server in development mode with
-  automatic restarts on file changes.
-- **generate**: Runs `express generate` to create any resource inside your
-  project. The actions available are "model", "controller", "route", "all"
-- **config**: Runs `express config` to config the date of your project.
+```bash
+npm start
+```
 
-### Project Structure
+---
 
-    ├── src
-    │   ├── app.js          # Express app configuration
-    │   ├── models          # Data models
-    │   ├── controllers     # Route controllers
-    │   ├── routes          # Application routes
-    ├── .env                # Environment variables
-    ├── index.js            # Server creation and configuration
-    ├── package.json        # Project metadata and dependencies
+# API Documentation
 
-### Contributing
+Once the server is running, Swagger documentation is available through the configured Swagger endpoint.
 
-Feel free to submit issues and pull requests to improve the project. For major
-changes, please open an issue first to discuss what you would like to change.
+---
 
-### License
+# Future Improvements
 
-This project is licensed under the ISC License - see the LICENSE file for
-details.
+- Docker support
+- Refresh Tokens
+- Rate Limiting
+- Request Validation
+- Unit Testing
+- Integration Testing
+- Logging System
+- CI/CD Pipeline
+- Monitoring
+
+---
+
+# Documentation
+
+Complete documentation is available in the main repository.
+
+📚 https://github.com/diegozsr1/buy-sell
+
+---
+
+# My Contributions
+
+During the development of the backend I contributed to several core features, including:
+
+- JWT authentication middleware.
+- Role authorization middleware.
+- Product images endpoint.
+- Authentication integration between frontend and backend.
+- Route protection.
+- API integration for Angular services.
+
+These contributions helped establish a secure communication flow between both applications while maintaining a modular and scalable architecture.
+
+---
+
+# License
+
+This project was developed for educational purposes as part of the Full Stack Developer Master's Degree at UNIR.
+
+---
+
+# Author
+
+Developed collaboratively by **Group 3**.
+
+Backend contributions by **Diego Zapata** focused on authentication, authorization, protected routes and API integration.
