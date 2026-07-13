@@ -34,6 +34,10 @@ The API communicates with a MySQL database and secures protected endpoints using
 
 https://github.com/diegozsr1/buy-sell
 
+## Live Demo
+
+https://buysell-backend-3knc.onrender.com/api-docs/
+
 ## Frontend
 
 https://github.com/diegozsr1/buy-sell-front
